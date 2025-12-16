@@ -143,6 +143,16 @@ variable "deploy_vpn_gateway" {
 }
 
 # ============================================================================
+# AZURE BASTION CONFIGURATION
+# ============================================================================
+
+variable "deploy_azure_bastion" {
+  description = "Deploy Azure Bastion for secure VM access (Hub & Spoke only)"
+  type        = bool
+  default     = false
+}
+
+# ============================================================================
 # MANAGEMENT GROUP CUSTOMIZATION
 # ============================================================================
 

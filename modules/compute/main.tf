@@ -84,12 +84,12 @@ resource "azurerm_network_security_group" "vm_nsg" {
     destination_address_prefix = "*"
   }
 
-  # Allow SSH (port 22) - for management
+  # Deny SSH (port 22) from internet as per network security policy
   security_rule {
-    name                       = "AllowSSH"
-    priority                   = 102
+    name                       = "DenySSHInternet"
+    priority                   = 101
     direction                  = "Inbound"
-    access                     = "Allow"
+    access                     = "Deny"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
@@ -97,16 +97,42 @@ resource "azurerm_network_security_group" "vm_nsg" {
     destination_address_prefix = "*"
   }
 
-  # Allow RDP (port 3389) - for Windows management
+  # Allow SSH (port 22) - from Bastion subnet only for secure management
   security_rule {
-    name                       = "AllowRDP"
+    name                       = "AllowSSHFromBastion"
+    priority                   = 102
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "10.0.2.0/26"  # AzureBastionSubnet
+    destination_address_prefix = "*"
+  }
+
+  # Deny RDP (port 3389) from internet as per network security policy
+  security_rule {
+    name                       = "DenyRDPInternet"
     priority                   = 103
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3389"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  # Allow RDP (port 3389) - from Bastion subnet only for secure management
+  security_rule {
+    name                       = "AllowRDPFromBastion"
+    priority                   = 104
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "3389"
-    source_address_prefix      = "*"
+    source_address_prefix      = "10.0.2.0/26"  # AzureBastionSubnet
     destination_address_prefix = "*"
   }
 

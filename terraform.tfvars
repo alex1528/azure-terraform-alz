@@ -61,6 +61,10 @@ hub_subnets = {
   }
 }
 
+# Deploy Azure Bastion for secure VM access (when using Hub & Spoke)
+# Bastion allows you to access VMs without exposing them to the internet
+deploy_azure_bastion = true
+
 # ============================================================================
 # VIRTUAL WAN CONFIGURATION (when network_architecture = "vwan")
 # ============================================================================

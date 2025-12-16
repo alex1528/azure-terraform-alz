@@ -12,6 +12,70 @@
 - 成本可控：可选资源按需部署
 - 生产就绪：配置简单、可扩展、易维护
 
+## 🔐 通过 Azure Bastion 进行安全的 VM 访问
+
+由于**网络安全策略**阻止了来自互联网的 SSH/RDP，本实现使用 **Azure Bastion** 进行安全的 VM 管理：
+
+### 架构
+```
+互联网用户
+    ↓
+Azure 门户 / Azure Bastion 服务
+    ↓
+Azure Bastion 主机 (10.0.2.0/26)
+    ↓
+私有 VM（无公网 IP 暴露）
+```
+
+### 配置
+- `terraform.tfvars` 中 `deploy_azure_bastion = true` 启用 Bastion
+- VM 网络安全组规则：
+  - ✅ SSH（端口 22）：仅允许来自 Bastion 子网 (10.0.2.0/26)
+  - ✅ RDP（端口 3389）：仅允许来自 Bastion 子网 (10.0.2.0/26)
+  - ❌ SSH/RDP：阻止来自互联网 (0.0.0.0/0)
+
+### 使用方法：通过 Azure Bastion 访问 VM
+
+**方式 1：Azure 门户（最简单）**
+```bash
+# 在 Azure 门户中：
+1. 导航到 Virtual Machine 资源
+2. 点击"连接" → "Bastion"
+3. 选择用户名和认证方式（SSH 密钥或密码）
+4. 点击"连接" - 浏览器中打开终端
+```
+
+**方式 2：Azure CLI（原生 SSH）**
+```bash
+# 使用 SSH 密钥连接
+az network bastion ssh \
+  --name "<bastion-name>" \
+  --resource-group "<resource-group>" \
+  --target-resource-id "<vm-resource-id>" \
+  --auth-type "ssh-key" \
+  --username "azureuser" \
+  --ssh-key "@<private-key-path>"
+```
+
+**方式 3：RDP（Windows VM）**
+```bash
+# 通过 Bastion 启用 RDP 隧道
+az network bastion rdp \
+  --name "<bastion-name>" \
+  --resource-group "<resource-group>" \
+  --target-resource-id "<vm-resource-id>" \
+  --username "azureuser"
+
+# 然后使用远程桌面连接到 localhost:13389
+```
+
+### 优势
+- 🔒 VM 无需公网 IP
+- 🌐 不暴露于互联网 SSH/RDP 攻击
+- 🔑 通过 Azure AD 管理认证
+- 📊 通过 Azure Monitor 完整审计访问
+- ✅ 符合"阻止来自互联网的 RDP/SSH"策略
+
 ## 新增功能
 - 计算模块（可选）：
   - 通过 `deploy_compute_resources` 启用

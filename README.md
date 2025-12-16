@@ -184,6 +184,70 @@ When `deploy_core_policies = true`, the following **essential security controls*
 - `DoNotEnforce` (Audit Mode) - Report violations without blocking
 - `Default` (Enforce Mode) - Block non-compliant resource deployment
 
+## 🔐 **Secure VM Access via Azure Bastion**
+
+To comply with the **Network Security Policy** that blocks SSH/RDP from the internet, this implementation uses **Azure Bastion** for secure VM management:
+
+### Architecture
+```
+Internet User
+    ↓
+Azure Portal / Azure Bastion Service
+    ↓
+Azure Bastion Host (10.0.2.0/26)
+    ↓
+Private VMs (No public IP exposure)
+```
+
+### Configuration
+- `deploy_azure_bastion = true` in `terraform.tfvars` enables Bastion
+- VM Network Security Group rules:
+  - ✅ SSH (port 22): Allowed from Bastion subnet only (10.0.2.0/26)
+  - ✅ RDP (port 3389): Allowed from Bastion subnet only (10.0.2.0/26)
+  - ❌ SSH/RDP: Blocked from internet (0.0.0.0/0)
+
+### Usage: Access VM via Azure Bastion
+
+**Option 1: Via Azure Portal (Easiest)**
+```bash
+# In Azure Portal:
+1. Navigate to your Virtual Machine resource
+2. Click "Connect" → "Bastion"
+3. Select username and authentication method (SSH key or password)
+4. Click "Connect" - browser-based terminal opens
+```
+
+**Option 2: Via Azure CLI (Native SSH)**
+```bash
+# Connect with SSH key
+az network bastion ssh \
+  --name "<bastion-name>" \
+  --resource-group "<resource-group>" \
+  --target-resource-id "<vm-resource-id>" \
+  --auth-type "ssh-key" \
+  --username "azureuser" \
+  --ssh-key "@<path-to-private-key>"
+```
+
+**Option 3: Via RDP (for Windows VMs)**
+```bash
+# Enable RDP tunneling through Bastion
+az network bastion rdp \
+  --name "<bastion-name>" \
+  --resource-group "<resource-group>" \
+  --target-resource-id "<vm-resource-id>" \
+  --username "azureuser"
+
+# Then use Remote Desktop Connection to localhost:13389
+```
+
+### Benefits
+- 🔒 VMs don't need public IP addresses
+- 🌐 No exposure to internet-based SSH/RDP attacks
+- 🔑 Managed authentication via Azure AD
+- 📊 Full audit trail of access through Azure Monitor
+- ✅ Complies with "Block RDP/SSH from Internet" policy
+
 ## 🌐 **Network Architecture Options**
 
 ### **Option 1: Hub & Spoke (Default)**
