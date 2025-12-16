@@ -2,6 +2,8 @@
 
 **Production-ready Azure Landing Zone (ALZ)** implementation using **Terraform** that provides flexible networking architectures, essential security policies, and follows Microsoft's Cloud Adoption Framework best practices.
 
+> Language: This README is available in Chinese. See [README.zh-CN.md](README.zh-CN.md).
+
 ## 🎯 **What This Implementation Provides**
 
 This Terraform implementation delivers a **practical and balanced approach** to Azure Landing Zones:
@@ -12,6 +14,28 @@ This Terraform implementation delivers a **practical and balanced approach** to 
 - 📊 **Centralized Monitoring** - Log Analytics workspaces and automation accounts
 - 💰 **Cost-Conscious Design** - Optional resource deployment to control expenses
 - 🔧 **Production-Ready** - Supports both audit and enforce policy modes
+
+## 🆕 New Features
+
+Recent updates add practical capabilities to simplify validation and enable compute and monitoring scenarios:
+
+- 🖥️ **Compute Module (Optional)**
+  - Enable VM deployment flags via `deploy_compute_resources`
+  - Configurable `vm_os_type`, `vm_size`, public IP options
+- 🔑 **SSH Key Generation Modes**
+  - Terraform-generated keys when `generate_ssh_key = true`
+  - External/local public key support and validation checks
+  - Guidance on state protection when storing private keys
+- 📈 **Azure Monitor Integration**
+  - Data Collection Rules and Monitor Agent enablement
+  - Log Analytics workspace creation for prod/non-prod
+  - See the Chinese guide: [AZURE_MONITOR_GUIDE.md](AZURE_MONITOR_GUIDE.md)
+- 🔒 **TLS Provider Support**
+  - Enables secure key/tls operations for certain scenarios
+- ✅ **Enhanced Validation Tooling**
+  - `validate-alz.sh` for environment and configuration checks
+  - `validate-alz-features.sh` for feature completeness checks
+  - Comprehensive documentation: `VALIDATION_SCRIPT_ASSESSMENT.md`, `VALIDATION_SCRIPTS_GUIDE.md`
 
 ## 📊 **Architecture Overview**
 
@@ -275,6 +299,9 @@ deploy_automation_account      = true
 # Optional: Run comprehensive validation script
 ./validate-alz.sh
 
+# Optional: Run features validation for compute/monitor/ssh
+./validate-alz-features.sh
+
 # Initialize Terraform with backend configuration
 terraform init -backend-config=backend.conf
 
@@ -295,6 +322,8 @@ The included `validate-alz.sh` script performs comprehensive pre-deployment chec
 - ✅ Dry-run terraform plan execution
 
 Run `./validate-alz.sh` before deployment to catch common issues early.
+
+For feature coverage (Compute/SSH/Monitor), also run `./validate-alz-features.sh`.
 
 ## 🗃️ **State Management**
 
@@ -503,6 +532,10 @@ terraform init -backend-config=backend.conf -migrate-state
 - [Hub-Spoke Network Architecture](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/hub-spoke)
 - [Virtual WAN Documentation](https://docs.microsoft.com/azure/virtual-wan/)
 - [Azure Management Groups](https://docs.microsoft.com/azure/governance/management-groups/)
+
+### 📄 Documentation in Chinese
+- 项目中文总览: [README.zh-CN.md](README.zh-CN.md)
+- Azure 监控集成指南: [AZURE_MONITOR_GUIDE.md](AZURE_MONITOR_GUIDE.md)
 
 ---
 
