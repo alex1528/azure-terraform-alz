@@ -111,7 +111,9 @@ module "core_policies" {
 
   # DINE configuration
   deploy_diagnostic_policies = true
-  log_analytics_workspace_id = var.deploy_log_analytics_workspace ? module.optional_resources.log_analytics_workspace_prod_id : var.log_analytics_workspace_id
+  log_analytics_workspace_id = var.deploy_log_analytics_workspace ? (
+    var.observability_environment == "prod" ? module.optional_resources.log_analytics_workspace_prod_id : module.optional_resources.log_analytics_workspace_nonprod_id
+  ) : var.log_analytics_workspace_id
   dine_category_group         = "audit"
   policy_assignment_location  = var.location
 
@@ -169,7 +171,9 @@ module "compute" {
   # Azure Monitor configuration
   enable_azure_monitor       = var.enable_azure_monitor
   subscription_id            = data.azurerm_client_config.current.subscription_id
-  log_analytics_workspace_id = var.deploy_log_analytics_workspace ? module.optional_resources.log_analytics_workspace_prod_id : var.log_analytics_workspace_id
+  log_analytics_workspace_id = var.deploy_log_analytics_workspace ? (
+    var.observability_environment == "prod" ? module.optional_resources.log_analytics_workspace_prod_id : module.optional_resources.log_analytics_workspace_nonprod_id
+  ) : var.log_analytics_workspace_id
 
   # Bastion subnet CIDR for NSG allow rules (auto from connectivity)
   bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
@@ -188,7 +192,7 @@ resource "azurerm_monitor_diagnostic_setting" "vm_diagnostics" {
   name               = "${var.resource_prefix}-vm-metrics"
   target_resource_id = var.vm_os_type == "linux" ? module.compute.vm_id : module.compute.vm_id
 
-  log_analytics_workspace_id = module.optional_resources.log_analytics_workspace_prod_id
+  log_analytics_workspace_id = var.observability_environment == "prod" ? module.optional_resources.log_analytics_workspace_prod_id : module.optional_resources.log_analytics_workspace_nonprod_id
 
   # Enable all platform metrics
   metric {

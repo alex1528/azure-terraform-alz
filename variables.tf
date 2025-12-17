@@ -369,3 +369,17 @@ variable "log_analytics_workspace_id" {
   type        = string
   default     = ""
 }
+
+# ============================================================================
+# OBSERVABILITY CONFIGURATION
+# ============================================================================
+
+variable "observability_environment" {
+  description = "Select which Log Analytics workspace to use when multiple are created: 'prod' or 'nonprod'"
+  type        = string
+  default     = "prod"
+  validation {
+    condition     = contains(["prod", "nonprod"], var.observability_environment)
+    error_message = "observability_environment must be either 'prod' or 'nonprod'."
+  }
+}
