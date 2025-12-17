@@ -94,3 +94,36 @@ variable "observability_environment" {
     error_message = "observability_environment must be either 'prod' or 'nonprod'."
   }
 }
+
+# Optional environment-specific overrides for Defender tier and plans
+variable "defender_tier_prod" {
+  description = "Override Defender pricing tier for prod (\"Free\" or \"Standard\"). Empty string to use default defender_tier."
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.defender_tier_prod == "" || contains(["Free", "Standard"], var.defender_tier_prod)
+    error_message = "defender_tier_prod must be '', 'Free' or 'Standard'."
+  }
+}
+
+variable "defender_tier_nonprod" {
+  description = "Override Defender pricing tier for nonprod (\"Free\" or \"Standard\"). Empty string to use default defender_tier."
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.defender_tier_nonprod == "" || contains(["Free", "Standard"], var.defender_tier_nonprod)
+    error_message = "defender_tier_nonprod must be '', 'Free' or 'Standard'."
+  }
+}
+
+variable "defender_plans_prod" {
+  description = "Override Defender plans for prod. Empty set to use default defender_plans."
+  type        = set(string)
+  default     = []
+}
+
+variable "defender_plans_nonprod" {
+  description = "Override Defender plans for nonprod. Empty set to use default defender_plans."
+  type        = set(string)
+  default     = []
+}

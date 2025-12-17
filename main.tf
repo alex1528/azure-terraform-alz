@@ -142,8 +142,14 @@ module "optional_resources" {
 
   # Defender for Cloud
   enable_defender_for_cloud = true
-  defender_auto_provision   = true
+  defender_auto_provision   = false
   defender_tier             = "Standard"
+
+  # Env-specific Defender overrides
+  defender_tier_prod     = var.defender_tier_prod
+  defender_tier_nonprod  = var.defender_tier_nonprod
+  defender_plans_prod    = var.defender_plans_prod
+  defender_plans_nonprod = var.defender_plans_nonprod
 
   # Log Analytics workspace names (from locals)
   log_analytics_workspace_prod_name    = local.log_analytics_workspace_prod_name

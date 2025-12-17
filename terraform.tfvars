@@ -182,3 +182,36 @@ tags = {
   Owner       = "BHR-Platform-Team@bingohr.com"
   CreatedDate = "2025-12-16"
 }
+
+# ============================================================================
+# DEFENDER FOR CLOUD (ENV-SPECIFIC OVERRIDES)
+# ============================================================================
+
+# Keep Standard tier for both environments (override if needed)
+defender_tier_prod    = "Standard"
+defender_tier_nonprod = "Standard"
+
+# Prod: include Containers; Nonprod: exclude Containers (remain Free)
+defender_plans_prod = [
+  "VirtualMachines",
+  "StorageAccounts",
+  "KeyVaults",
+  "AppServices",
+  "Arm",
+  "OpenSourceRelationalDatabases",
+  "CosmosDbs",
+  "SqlServers",
+  "Containers"
+]
+
+defender_plans_nonprod = [
+  "VirtualMachines",
+  "StorageAccounts",
+  "KeyVaults",
+  "AppServices",
+  "Arm",
+  "OpenSourceRelationalDatabases",
+  "CosmosDbs",
+  "SqlServers",
+  "Containers"
+]

@@ -89,6 +89,16 @@ locals {
   selected_law_id = var.deploy_log_analytics_workspace ? (
     var.observability_environment == "prod" ? azurerm_log_analytics_workspace.prod[0].id : azurerm_log_analytics_workspace.nonprod[0].id
   ) : null
+  effective_defender_tier = var.observability_environment == "prod" ? (
+    var.defender_tier_prod != "" ? var.defender_tier_prod : var.defender_tier
+  ) : (
+    var.defender_tier_nonprod != "" ? var.defender_tier_nonprod : var.defender_tier
+  )
+  effective_defender_plans = var.observability_environment == "prod" ? (
+    length(var.defender_plans_prod) > 0 ? var.defender_plans_prod : var.defender_plans
+  ) : (
+    length(var.defender_plans_nonprod) > 0 ? var.defender_plans_nonprod : var.defender_plans
+  )
 }
 
 resource "azurerm_security_center_auto_provisioning" "this" {
@@ -97,8 +107,8 @@ resource "azurerm_security_center_auto_provisioning" "this" {
 }
 
 resource "azurerm_security_center_subscription_pricing" "plan" {
-  for_each      = var.enable_defender_for_cloud ? var.defender_plans : []
-  tier          = var.defender_tier
+  for_each      = var.enable_defender_for_cloud ? local.effective_defender_plans : []
+  tier          = local.effective_defender_tier
   resource_type = each.value
 }
 

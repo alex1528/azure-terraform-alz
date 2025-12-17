@@ -18,9 +18,9 @@ output "log_analytics_workspace_nonprod_id" {
 output "defender_for_cloud_summary" {
   value = {
     enabled            = var.enable_defender_for_cloud
-    tier               = var.defender_tier
+    tier               = local.effective_defender_tier
     auto_provision     = var.defender_auto_provision
-    plans              = var.enable_defender_for_cloud ? sort(tolist(var.defender_plans)) : []
+    plans              = var.enable_defender_for_cloud ? sort(tolist(local.effective_defender_plans)) : []
     workspace_linked   = var.enable_defender_for_cloud && var.deploy_log_analytics_workspace
     workspace_selected = var.deploy_log_analytics_workspace ? (var.observability_environment == "prod" ? azurerm_log_analytics_workspace.prod[0].id : azurerm_log_analytics_workspace.nonprod[0].id) : ""
   }
