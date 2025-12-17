@@ -31,3 +31,6 @@ Thumbs.db
 
 # Log files
 *.log
+
+# Terraform plans directory (do not commit generated plans)
+plans/
