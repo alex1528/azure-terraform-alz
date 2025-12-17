@@ -1,5 +1,7 @@
 # main.tf in optional_resources module
 
+data "azurerm_client_config" "current" {}
+
 # Create a dedicated resource group for optional resources
 resource "azurerm_resource_group" "optional_resources" {
   name     = "${var.resource_prefix}-optional-resources-rg"
@@ -77,4 +79,32 @@ resource "azurerm_user_assigned_identity" "managed_identity" {
   name                = "${var.resource_prefix}-managed-identity"
   location            = var.location
   resource_group_name = azurerm_resource_group.optional_resources.name
+}
+
+# ==========================
+# Defender for Cloud (subscription level)
+# ==========================
+
+locals {
+  selected_law_id = var.deploy_log_analytics_workspace ? (
+    var.observability_environment == "prod" ? azurerm_log_analytics_workspace.prod[0].id : azurerm_log_analytics_workspace.nonprod[0].id
+  ) : null
+}
+
+resource "azurerm_security_center_auto_provisioning" "this" {
+  count          = var.enable_defender_for_cloud && var.defender_auto_provision ? 1 : 0
+  auto_provision = "Off"
+}
+
+resource "azurerm_security_center_subscription_pricing" "plan" {
+  for_each      = var.enable_defender_for_cloud ? var.defender_plans : []
+  tier          = var.defender_tier
+  resource_type = each.value
+}
+
+# Link Defender workspace to selected LAW when available
+resource "azurerm_security_center_workspace" "this" {
+  count        = var.enable_defender_for_cloud && var.deploy_log_analytics_workspace ? 1 : 0
+  scope        = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
+  workspace_id = local.selected_law_id
 }

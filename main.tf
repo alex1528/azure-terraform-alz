@@ -137,6 +137,14 @@ module "optional_resources" {
   resource_prefix = var.resource_prefix
   location        = var.location
 
+  # Environment selection for observability / Defender workspace binding
+  observability_environment = var.observability_environment
+
+  # Defender for Cloud
+  enable_defender_for_cloud = true
+  defender_auto_provision   = true
+  defender_tier             = "Standard"
+
   # Log Analytics workspace names (from locals)
   log_analytics_workspace_prod_name    = local.log_analytics_workspace_prod_name
   log_analytics_workspace_nonprod_name = local.log_analytics_workspace_nonprod_name
