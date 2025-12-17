@@ -109,6 +109,12 @@ module "core_policies" {
   create_sandbox_exemptions = false
   sandbox_exemption_expiry  = null # No expiry by default
 
+  # DINE configuration
+  deploy_diagnostic_policies = true
+  log_analytics_workspace_id = var.deploy_log_analytics_workspace ? module.optional_resources.log_analytics_workspace_prod_id : var.log_analytics_workspace_id
+  dine_category_group         = "audit"
+  policy_assignment_location  = var.location
+
   depends_on = [module.management_groups]
 }
 

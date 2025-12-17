@@ -57,3 +57,16 @@ output "deployed_policies_summary" {
     enforcement_mode             = var.policy_enforcement_mode
   } : null
 }
+
+# ============================================================================
+# DINE OUTPUTS
+# ============================================================================
+
+output "dine_policy_assignment_ids" {
+  description = "IDs of DINE policy assignments (Activity Logs, Bastion, NSG)"
+  value = var.deploy_diagnostic_policies && length(var.log_analytics_workspace_id) > 0 ? {
+    activity_logs = one(azurerm_management_group_policy_assignment.dine_activity_logs[*].id)
+    bastion       = one(azurerm_management_group_policy_assignment.dine_bastion[*].id)
+    nsg           = one(azurerm_management_group_policy_assignment.dine_nsg[*].id)
+  } : null
+}

@@ -75,7 +75,7 @@ locals {
     }
 
     deny_ssh_from_internet = {
-      policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2c89a2e5-7285-40fe-ade4-40d0b03f9d22"
+      policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2c89a2e5-7285-40fe-afe0-ae8654b92fab"
       display_name         = "SSH access from the Internet should be blocked"
       description          = "This policy denies any network security rule that allows SSH access from Internet"
     }
@@ -113,6 +113,7 @@ locals {
     require_sql_tde         = "lz-sql-tde"
     require_vm_backup       = "lz-vm-bkup"
     deny_rdp_from_internet  = "lz-deny-rdp"
+    deny_ssh_from_internet  = "lz-deny-ssh"
   }
 
   # Selected policy keys to assign (exclude problematic/unsupported ones)
@@ -130,6 +131,7 @@ locals {
     "require_sql_tde",
     "require_vm_backup",
     "deny_rdp_from_internet",
+    "deny_ssh_from_internet",
   ]
 }
 
@@ -226,4 +228,104 @@ resource "azurerm_management_group_policy_exemption" "sandbox_exemptions" {
   policy_assignment_id = azurerm_management_group_policy_assignment.landing_zones_core_policies[each.value].id
   exemption_category   = "Waiver"
   expires_on           = var.sandbox_exemption_expiry
+}
+
+# ============================================================================
+# MANAGEMENT GROUP RBAC ASSIGNMENTS (OPTIONAL)
+# ============================================================================
+
+locals {
+  platform_mg_scope      = "/providers/Microsoft.Management/managementGroups/${var.platform_management_group_id}"
+  landing_zones_mg_scope = "/providers/Microsoft.Management/managementGroups/${var.landing_zones_management_group_id}"
+}
+
+# Platform MG RBAC assignments
+resource "azurerm_role_assignment" "platform_mg" {
+  for_each             = { for a in var.platform_rbac_assignments : "${a.role_definition_name}-${a.principal_id}" => a }
+  scope                = local.platform_mg_scope
+  role_definition_name = each.value.role_definition_name
+  principal_id         = each.value.principal_id
+}
+
+# Landing Zones MG RBAC assignments
+resource "azurerm_role_assignment" "landing_zones_mg" {
+  for_each             = { for a in var.landing_zones_rbac_assignments : "${a.role_definition_name}-${a.principal_id}" => a }
+  scope                = local.landing_zones_mg_scope
+  role_definition_name = each.value.role_definition_name
+  principal_id         = each.value.principal_id
+}
+
+# ============================================================================
+# DIAGNOSTIC (DINE) POLICY ASSIGNMENTS (ROOT MG SCOPE)
+# ============================================================================
+
+locals {
+  root_mg_scope = "/providers/Microsoft.Management/managementGroups/${var.root_management_group_id}"
+}
+
+# Configure Azure Activity logs to stream to specified Log Analytics workspace
+resource "azurerm_management_group_policy_assignment" "dine_activity_logs" {
+  count                = var.deploy_diagnostic_policies && length(var.log_analytics_workspace_id) > 0 ? 1 : 0
+  name                 = "dine-activity-la"
+  display_name         = "Configure Activity Logs to Log Analytics"
+  description          = "Deploy diagnostic settings for Azure Activity logs to stream to Log Analytics"
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/2465583e-4e78-4c15-b6be-a36cbc7c8b0f"
+  management_group_id  = var.root_management_group_id
+  enforce              = var.policy_enforcement_mode == "Default" ? true : false
+  location             = var.policy_assignment_location
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  parameters = jsonencode({
+    logAnalytics = { value = var.log_analytics_workspace_id }
+    logsEnabled  = { value = var.activity_logs_enabled }
+  })
+}
+
+# Enable logging by category group for Bastions to Log Analytics
+resource "azurerm_management_group_policy_assignment" "dine_bastion" {
+  count                = var.deploy_diagnostic_policies && length(var.log_analytics_workspace_id) > 0 ? 1 : 0
+  name                 = "dine-bastion-la"
+  display_name         = "Enable Bastion diagnostics to Log Analytics"
+  description          = "Deploy diagnostic settings for Bastion resources to stream to Log Analytics"
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/f8352124-56fa-4f94-9441-425109cdc14b"
+  management_group_id  = var.root_management_group_id
+  enforce              = var.policy_enforcement_mode == "Default" ? true : false
+  location             = var.policy_assignment_location
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  parameters = jsonencode({
+    logAnalytics          = { value = var.log_analytics_workspace_id }
+    categoryGroup         = { value = var.dine_category_group }
+    diagnosticSettingName = { value = "setByPolicy-LogAnalytics" }
+    resourceLocationList  = { value = ["*"] }
+  })
+}
+
+# Configure diagnostic settings for Azure Network Security Groups to Log Analytics workspace
+resource "azurerm_management_group_policy_assignment" "dine_nsg" {
+  count                = var.deploy_diagnostic_policies && length(var.log_analytics_workspace_id) > 0 ? 1 : 0
+  name                 = "dine-nsg-la"
+  display_name         = "Enable NSG diagnostics to Log Analytics"
+  description          = "Deploy diagnostic settings for NSG resources to stream to Log Analytics"
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/98a2e215-5382-489e-bd29-32e7190a39ba"
+  management_group_id  = var.root_management_group_id
+  enforce              = var.policy_enforcement_mode == "Default" ? true : false
+  location             = var.policy_assignment_location
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  parameters = jsonencode({
+    logAnalytics                         = { value = var.log_analytics_workspace_id }
+    diagnosticsSettingNameToUse          = { value = "setByPolicy" }
+    NetworkSecurityGroupEventEnabled     = { value = var.nsg_event_enabled }
+    NetworkSecurityGroupRuleCounterEnabled = { value = var.nsg_rule_counter_enabled }
+  })
 }

@@ -108,7 +108,7 @@ deploy_core_policies = true
 # Policy enforcement mode:
 # - "DoNotEnforce" = Audit mode (recommended for initial deployment)
 # - "Default" = Enforce mode (recommended for production)
-policy_enforcement_mode = "Default"
+policy_enforcement_mode = "DoNotEnforce"
 
 # ============================================================================
 # OPTIONAL MANAGEMENT RESOURCES

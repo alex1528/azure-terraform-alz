@@ -89,3 +89,87 @@ variable "sandbox_exemption_expiry" {
     error_message = "Exemption expiry must be in YYYY-MM-DD format or null."
   }
 }
+
+# ============================================================================
+# MANAGEMENT GROUP RBAC VARIABLES (OPTIONAL)
+# ============================================================================
+
+variable "platform_rbac_assignments" {
+  description = "RBAC assignments at the Platform management group scope"
+  type = list(object({
+    role_definition_name = string
+    principal_id         = string
+  }))
+  default = []
+}
+
+# ============================================================================
+# DIAGNOSTIC (DINE) POLICY CONFIGURATION
+# ============================================================================
+
+variable "deploy_diagnostic_policies" {
+  description = "Deploy diagnostic (DINE) policies for Activity Logs, NSG, Bastion"
+  type        = bool
+  default     = true
+}
+
+variable "policy_assignment_location" {
+  description = "Azure region location to create managed identity for policy assignments"
+  type        = string
+  default     = "eastasia"
+}
+
+variable "log_analytics_workspace_id" {
+  description = "Resource ID of the Log Analytics Workspace used by DINE policies"
+  type        = string
+  default     = ""
+}
+
+variable "dine_category_group" {
+  description = "Category group for Bastion diagnostics (audit or allLogs)"
+  type        = string
+  default     = "audit"
+  validation {
+    condition     = contains(["audit", "allLogs"], var.dine_category_group)
+    error_message = "dine_category_group must be 'audit' or 'allLogs'."
+  }
+}
+
+variable "activity_logs_enabled" {
+  description = "Enable subscription Activity Logs streaming (True/False)"
+  type        = string
+  default     = "True"
+  validation {
+    condition     = contains(["True", "False"], var.activity_logs_enabled)
+    error_message = "activity_logs_enabled must be 'True' or 'False'."
+  }
+}
+
+variable "nsg_event_enabled" {
+  description = "Enable NetworkSecurityGroupEvent logs (True/False)"
+  type        = string
+  default     = "True"
+  validation {
+    condition     = contains(["True", "False"], var.nsg_event_enabled)
+    error_message = "nsg_event_enabled must be 'True' or 'False'."
+  }
+}
+
+variable "nsg_rule_counter_enabled" {
+  description = "Enable NetworkSecurityGroupRuleCounter logs (True/False)"
+  type        = string
+  default     = "True"
+  validation {
+    condition     = contains(["True", "False"], var.nsg_rule_counter_enabled)
+    error_message = "nsg_rule_counter_enabled must be 'True' or 'False'."
+  }
+}
+
+variable "landing_zones_rbac_assignments" {
+  description = "RBAC assignments at the Landing Zones management group scope"
+  type = list(object({
+    role_definition_name = string
+    principal_id         = string
+  }))
+  default = []
+}
