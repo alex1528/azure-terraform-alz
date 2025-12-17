@@ -78,8 +78,8 @@ module "connectivity" {
   vpn_gateway_name             = local.vpn_gateway_name
 
   # Optional features
-  deploy_azure_firewall = false # Can be enabled as needed
-  deploy_azure_bastion  = false # Can be enabled as needed
+  deploy_azure_firewall = true # Can be enabled as needed
+  deploy_azure_bastion  = true # Can be enabled as needed
 }
 
 # ============================================================================
@@ -102,11 +102,11 @@ module "core_policies" {
 
   # Policy parameters
   allowed_locations        = [var.location] # Allow primary location by default
-  required_environment_tag = "ALZ"
+  required_environment_tag = "BingoHR-ALZ"
 
   # Policy initiative and exemptions
-  create_policy_initiative  = true
-  create_sandbox_exemptions = true
+  create_policy_initiative  = false
+  create_sandbox_exemptions = false
   sandbox_exemption_expiry  = null # No expiry by default
 
   depends_on = [module.management_groups]
@@ -164,6 +164,12 @@ module "compute" {
   enable_azure_monitor       = var.enable_azure_monitor
   subscription_id            = data.azurerm_client_config.current.subscription_id
   log_analytics_workspace_id = var.deploy_log_analytics_workspace ? module.optional_resources.log_analytics_workspace_prod_id : var.log_analytics_workspace_id
+
+  # Bastion subnet CIDR for NSG allow rules (auto from connectivity)
+  bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
+
+  # Bastion private IP for NSG allow rules (default to Azure platform IP)
+  bastion_private_ip = "168.63.129.16"
 }
 
 # ============================================================================

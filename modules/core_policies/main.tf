@@ -94,6 +94,43 @@ locals {
       description          = "This policy audits if Activity log is not set to be retained for a year or forever"
     }
   }
+
+  # Short names for policy assignment (Azure limit: <= 24 chars)
+  platform_policy_names = {
+    require_storage_https               = "core-sto-https"
+    require_sql_tde                     = "core-sql-tde"
+    require_vm_backup                   = "core-vm-bkup"
+    allowed_locations                   = "core-allowedloc"
+    require_environment_tag             = "core-tag-env"
+    deny_rdp_from_internet              = "core-deny-rdp"
+    deny_ssh_from_internet              = "core-deny-ssh"
+    require_key_vault_purge_protection  = "core-kv-purge"
+    require_activity_log_retention      = "core-activitylog"
+  }
+
+  lz_policy_names = {
+    require_storage_https   = "lz-sto-https"
+    require_sql_tde         = "lz-sql-tde"
+    require_vm_backup       = "lz-vm-bkup"
+    deny_rdp_from_internet  = "lz-deny-rdp"
+  }
+
+  # Selected policy keys to assign (exclude problematic/unsupported ones)
+  platform_policy_keys = [
+    "require_storage_https",
+    "require_sql_tde",
+    "require_vm_backup",
+    "allowed_locations",
+    "require_key_vault_purge_protection",
+    "require_activity_log_retention",
+  ]
+
+  landing_zones_policy_keys = [
+    "require_storage_https",
+    "require_sql_tde",
+    "require_vm_backup",
+    "deny_rdp_from_internet",
+  ]
 }
 
 # ============================================================================
@@ -102,16 +139,16 @@ locals {
 
 # Assign core security policies to Platform management group
 resource "azurerm_management_group_policy_assignment" "platform_core_policies" {
-  for_each             = var.deploy_core_policies ? local.core_policies : tomap({})
-  name                 = "core-${each.key}"
-  display_name         = each.value.display_name
-  description          = each.value.description
-  policy_definition_id = each.value.policy_definition_id
+  for_each             = var.deploy_core_policies ? toset(local.platform_policy_keys) : toset([])
+  name                 = local.platform_policy_names[each.key]
+  display_name         = local.core_policies[each.key].display_name
+  description          = local.core_policies[each.key].description
+  policy_definition_id = local.core_policies[each.key].policy_definition_id
   management_group_id  = var.platform_management_group_id
   enforce              = var.policy_enforcement_mode == "Default" ? true : false
 
   # Add parameters if they exist for this policy
-  parameters = jsonencode(lookup(each.value, "parameters", {}))
+  parameters = jsonencode(lookup(local.core_policies[each.key], "parameters", {}))
 }
 
 # ============================================================================
@@ -120,17 +157,9 @@ resource "azurerm_management_group_policy_assignment" "platform_core_policies" {
 
 # Assign workload-specific policies to Landing Zones management group
 resource "azurerm_management_group_policy_assignment" "landing_zones_core_policies" {
-  for_each = var.deploy_core_policies ? toset([
-    # Only apply specific policies that are relevant for workloads
-    "require_storage_https",
-    "require_sql_tde",
-    "require_vm_backup",
-    "deny_rdp_from_internet",
-    "deny_ssh_from_internet",
-    "require_environment_tag",
-  ]) : toset([])
+  for_each = var.deploy_core_policies ? toset(local.landing_zones_policy_keys) : toset([])
 
-  name                 = "lz-${each.key}"
+  name                 = local.lz_policy_names[each.key]
   display_name         = local.core_policies[each.key].display_name
   description          = local.core_policies[each.key].description
   policy_definition_id = local.core_policies[each.key].policy_definition_id
@@ -188,7 +217,6 @@ resource "azurerm_management_group_policy_assignment" "core_security_initiative"
 resource "azurerm_management_group_policy_exemption" "sandbox_exemptions" {
   for_each = var.create_sandbox_exemptions ? {
     rdp_exemption = "deny_rdp_from_internet"
-    ssh_exemption = "deny_ssh_from_internet"
   } : {}
 
   name                 = "sandbox-${each.value}-exemption"

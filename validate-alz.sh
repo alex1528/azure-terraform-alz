@@ -180,12 +180,33 @@ fi
 print_status "INFO" "Formatting Terraform code..."
 terraform fmt -recursive
 
-print_status "INFO" "Running Terraform plan (dry run)..."
-if terraform plan -out=tfplan.tmp &> /dev/null; then
+PLAN_LOG="terraform_plan_$(date +%Y%m%d_%H%M%S).log"
+
+if [ "$VERBOSE" = true ] || [ "$FULL_VALIDATION" = true ]; then
+    print_status "INFO" "Running Terraform plan (streaming output)..."
+    set -o pipefail
+    terraform plan -no-color -out=tfplan.tmp 2>&1 | tee "$PLAN_LOG"
+    PLAN_EXIT=${PIPESTATUS[0]}
+    set +o pipefail
+else
+    print_status "INFO" "Running Terraform plan (capturing logs)..."
+    terraform plan -no-color -out=tfplan.tmp >"$PLAN_LOG" 2>&1
+    PLAN_EXIT=$?
+fi
+
+if [ $PLAN_EXIT -eq 0 ]; then
     print_status "SUCCESS" "Terraform plan completed successfully"
     rm -f tfplan.tmp
+    if [ "$FULL_VALIDATION" = true ]; then
+        print_status "INFO" "Plan output saved to ${PLAN_LOG}"
+    else
+        rm -f "$PLAN_LOG" 2>/dev/null || true
+    fi
 else
-    print_status "ERROR" "Terraform plan failed. Please review the configuration."
+    print_status "ERROR" "Terraform plan failed."
+    print_status "INFO" "Showing last 80 lines from ${PLAN_LOG}:"
+    tail -n 80 "$PLAN_LOG" 2>/dev/null || true
+    print_status "INFO" "Full log saved to ${PLAN_LOG}. Re-run with --verbose for live output, or set TF_LOG=ERROR."
     rm -f tfplan.tmp
     exit 1
 fi
@@ -194,7 +215,8 @@ fi
 print_status "INFO" "Configuration recommendations:"
 
 # Check network architecture
-NETWORK_ARCH=$(grep "network_architecture" terraform.tfvars | cut -d'"' -f2)
+# Extract network_architecture from an actual assignment line, ignore comments
+NETWORK_ARCH=$(awk -F= '/^[[:space:]]*network_architecture[[:space:]]*=/ {val=$2; gsub(/^[[:space:]]+|[[:space:]]+$/, "", val); gsub(/"/, "", val); print val; exit}' terraform.tfvars)
 case $NETWORK_ARCH in
     "hub_spoke")
         print_status "INFO" "Network architecture: Hub & Spoke (recommended for most scenarios)"

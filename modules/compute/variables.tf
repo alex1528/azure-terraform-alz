@@ -104,3 +104,20 @@ variable "subscription_id" {
   type        = string
   default     = ""
 }
+
+# ============================================================================
+# BASTION SOURCE CIDR FOR NSG RULES
+# ============================================================================
+
+variable "bastion_source_cidr" {
+  description = "CIDR of AzureBastionSubnet to allow SSH/RDP access to VMs via Bastion"
+  type        = string
+  default     = ""
+}
+
+variable "bastion_private_ip" {
+  description = "Azure Bastion management private IP (default 168.63.129.16) to allow SSH/RDP from this IP"
+  type        = string
+  default     = "168.63.129.16"
+}
+

@@ -114,6 +114,7 @@ output "bastion_host_fqdn" {
   value       = var.deploy_hub_spoke && var.deploy_azure_bastion ? azurerm_bastion_host.main[0].dns_name : null
 }
 
+
 # ============================================================================
 # ROUTING OUTPUTS
 # ============================================================================

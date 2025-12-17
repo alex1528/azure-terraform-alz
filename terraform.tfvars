@@ -5,16 +5,16 @@
 # ============================================================================
 
 # Root management group name - this appears under the tenant root
-root_management_group_name = "Contoso ALZ"
+root_management_group_name = "BingoHR ALZ"
 
 # Prefix for naming resources (used in management group names and resource names)
-resource_prefix = "contoso"
+resource_prefix = "bingohr"
 
 # Organization name for consistent naming
-org_name = "contoso"
+org_name = "bingohr"
 
 # Primary Azure region for resource deployments
-location = "westus3"
+location = "eastasia"
 
 # ============================================================================
 # SUBSCRIPTION ASSIGNMENTS (OPTIONAL)
@@ -43,21 +43,21 @@ deploy_connectivity_resources = true
 # ============================================================================
 
 # Hub virtual network address space
-hub_vnet_address_space = ["10.0.0.0/22"]
+hub_vnet_address_space = ["10.100.0.0/22"]
 
 # Hub subnets configuration
 hub_subnets = {
   "snet-shared-services" = {
-    address_prefixes = ["10.0.0.0/24"]
+    address_prefixes = ["10.100.0.0/24"]
   }
   "snet-management" = {
-    address_prefixes = ["10.0.1.0/24"]
+    address_prefixes = ["10.100.1.0/24"]
   }
   "AzureBastionSubnet" = {
-    address_prefixes = ["10.0.2.0/26"]
+    address_prefixes = ["10.100.2.0/26"]
   }
   "AzureFirewallSubnet" = {
-    address_prefixes = ["10.0.3.0/26"]
+    address_prefixes = ["10.100.3.0/26"]
   }
 }
 
@@ -73,7 +73,7 @@ deploy_azure_bastion = true
 virtual_wan_name = ""
 
 # Virtual hub address prefix
-virtual_hub_address_prefix = "10.0.0.0/24"
+virtual_hub_address_prefix = "10.100.0.0/24"
 
 # Deploy optional gateways in Virtual WAN hub
 deploy_express_route_gateway = false
@@ -108,7 +108,7 @@ deploy_core_policies = true
 # Policy enforcement mode:
 # - "DoNotEnforce" = Audit mode (recommended for initial deployment)
 # - "Default" = Enforce mode (recommended for production)
-policy_enforcement_mode = "DoNotEnforce"
+policy_enforcement_mode = "Default"
 
 # ============================================================================
 # OPTIONAL MANAGEMENT RESOURCES
@@ -124,7 +124,7 @@ deploy_automation_account = true
 deploy_data_collection_rules = false
 
 # Deploy User Assigned Managed Identity
-deploy_managed_identity = false
+deploy_managed_identity = true
 
 # ============================================================================
 # COMPUTE RESOURCES (VIRTUAL MACHINE)
@@ -153,7 +153,7 @@ ssh_public_key_path = "~/.ssh/id_rsa.pub"
 # Generate SSH key pair via Terraform instead of using local key file
 # Set to true to have Terraform generate a new SSH key (stored in state file)
 # Set to false (default) to use existing local SSH key at ssh_public_key_path
-generate_ssh_key = false
+generate_ssh_key = true
 
 # Assign a public IP address to the VM
 assign_public_ip = true
@@ -174,11 +174,11 @@ enable_azure_monitor = true
 
 # Default tags applied to all resources
 tags = {
-  Environment = "ALZ"
-  Project     = "Azure-Landing-Zone"
+  Environment = "BingoHR-ALZ"
+  Project     = "BingoHR-Azure-Landing-Zone"
   ManagedBy   = "Terraform"
   Framework   = "Azure-Landing-Zones"
   CostCenter  = "IT-Infrastructure"
-  Owner       = "platform-team@contoso.com"
-  CreatedDate = "2025-09-26"
+  Owner       = "BHR-Platform-Team@bingohr.com"
+  CreatedDate = "2025-12-16"
 }

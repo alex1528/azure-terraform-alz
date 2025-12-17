@@ -87,7 +87,7 @@ resource "azurerm_network_security_group" "vm_nsg" {
   # Deny SSH (port 22) from internet as per network security policy
   security_rule {
     name                       = "DenySSHInternet"
-    priority                   = 101
+    priority                   = 121
     direction                  = "Inbound"
     access                     = "Deny"
     protocol                   = "Tcp"
@@ -106,14 +106,14 @@ resource "azurerm_network_security_group" "vm_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "10.0.2.0/26"  # AzureBastionSubnet
+    source_address_prefix      = var.bastion_source_cidr
     destination_address_prefix = "*"
   }
 
   # Deny RDP (port 3389) from internet as per network security policy
   security_rule {
     name                       = "DenyRDPInternet"
-    priority                   = 103
+    priority                   = 120
     direction                  = "Inbound"
     access                     = "Deny"
     protocol                   = "Tcp"
@@ -126,15 +126,48 @@ resource "azurerm_network_security_group" "vm_nsg" {
   # Allow RDP (port 3389) - from Bastion subnet only for secure management
   security_rule {
     name                       = "AllowRDPFromBastion"
-    priority                   = 104
+    priority                   = 103
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "3389"
-    source_address_prefix      = "10.0.2.0/26"  # AzureBastionSubnet
+    source_address_prefix      = var.bastion_source_cidr
     destination_address_prefix = "*"
   }
+
+  # Allow SSH (22) from Bastion private IP (if provided)
+  dynamic "security_rule" {
+    for_each = var.bastion_private_ip != "" ? [var.bastion_private_ip] : []
+    content {
+      name                       = "AllowSSHFromBastionPrivateIP"
+      priority                   = 106
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "22"
+      source_address_prefix      = security_rule.value
+      destination_address_prefix = "*"
+    }
+  }
+
+  # Allow RDP (3389) from Bastion private IP (if provided)
+  dynamic "security_rule" {
+    for_each = var.bastion_private_ip != "" ? [var.bastion_private_ip] : []
+    content {
+      name                       = "AllowRDPFromBastionPrivateIP"
+      priority                   = 107
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "3389"
+      source_address_prefix      = security_rule.value
+      destination_address_prefix = "*"
+    }
+  }
+
 
   # Allow all outbound by default
   security_rule {

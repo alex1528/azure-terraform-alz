@@ -1,3 +1,35 @@
+# 快速使用指南
+
+## 资源销毁（一键）
+
+- 整体销毁：
+  - 预览并交互确认：
+    
+    ```bash
+    ./destroy-alz.sh
+    ```
+  - 一键非交互销毁：
+    
+    ```bash
+    ./destroy-alz.sh --auto-approve
+    ```
+  - 实时查看输出或保留完整日志：
+    
+    ```bash
+    ./destroy-alz.sh --verbose
+    ./destroy-alz.sh --full
+    ```
+
+- 注意事项：
+  - 在与部署时相同的目录与 workspace/backedn 下执行。
+  - 若策略或资源锁阻止删除，可先将 `policy_enforcement_mode` 设为 `DoNotEnforce` 后再重试。
+  - 需要选择性删除时，可使用 `terraform destroy -target=...` 仅销毁指定资源。
+## 部署前提
+- Azure CLI 已登录并切到管理订阅：
+```bash
+az login
+az account set --subscription "<management-subscription-id>"
+```
 # 使用说明：Azure Landing Zone Terraform 实施指南
 
 本项目提供一套遵循 Microsoft Cloud Adoption Framework 的 Azure Landing Zone（ALZ）生产可用实现，使用 Terraform 快速、可控地部署：管理组层级、可选网络架构（Hub&Spoke / Virtual WAN / 无网络）、核心安全策略，以及集中化的监控与运维资源。
