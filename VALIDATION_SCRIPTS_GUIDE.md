@@ -100,6 +100,27 @@ vm_size = "Standard_D2s_v3"
 ```
 检查所有新功能配置 ✅
 
+### 第 2.5 步：标签治理验证（存在与值）
+```powershell
+# 生成并应用“标签值强制”计划（如需）
+terraform plan -out "plans/tag-value-enforce.plan"
+terraform apply "plans/tag-value-enforce.plan"
+
+# 平台与落地区域管理组范围检查（内置：标签存在；自定义：标签值）
+$platformScope = "/providers/Microsoft.Management/managementGroups/<platform-mg-id>"
+$lzScope       = "/providers/Microsoft.Management/managementGroups/<landingzones-mg-id>"
+
+az policy assignment list --scope $platformScope | ConvertFrom-Json | Where-Object { $_.parameters.tagName.value -in @('Environment','CostCenter','Owner') }
+az policy assignment list --scope $lzScope       | ConvertFrom-Json | Where-Object { $_.parameters.tagName.value -in @('Environment','CostCenter','Owner') }
+
+# 过滤“标签值强制”自定义策略（按显示名）
+az policy assignment list --scope $platformScope | ConvertFrom-Json | Where-Object { $_.displayName -match 'Require specific .* tag value' }
+az policy assignment list --scope $lzScope       | ConvertFrom-Json | Where-Object { $_.displayName -match 'Require specific .* tag value' }
+```
+说明：
+- `policy_enforcement_mode` 控制生效模式：`DoNotEnforce`（审计）/ `Default`（强制拒绝）。
+- 期望值来自 `required_environment_tag`、`required_cost_center_tag`、`required_owner_tag`。
+
 ### 第 3 步：SSH 密钥验证
 ```bash
 bash ssh-key-demo.sh --demo
@@ -165,6 +186,7 @@ terraform plan
 | **新功能覆盖** | ❌ 0% | ✅ 新脚本完全覆盖 |
 | **SSH 密钥验证** | ❌ 无 | ✅ 已检查 |
 | **Monitor 验证** | ❌ 无 | ✅ 已检查 |
+| **标签治理验证** | ❌ 无 | ✅ 已加入（存在与值） |
 | **整体覆盖率** | ⚠️ 50% | ✅✅ 100% |
 
 ---

@@ -239,6 +239,7 @@ resource "azurerm_policy_definition" "rg_require_tag_value" {
   policy_type  = "Custom"
   mode         = "All"
   description  = "Deny resource group creation/update when the specified tag is missing or its value differs from the required value."
+  management_group_id = var.root_management_group_id
 
   metadata = jsonencode({
     category = "Tags"

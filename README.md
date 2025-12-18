@@ -175,7 +175,8 @@ When `deploy_core_policies = true`, the following **essential security controls*
 | **SQL Encryption** | Require Transparent Data Encryption | All Resources | Configurable |
 | **VM Backup Protection** | Require Azure Backup for VMs | Landing Zones | Configurable |
 | **Location Restrictions** | Limit resource deployment regions | All Resources | Configurable |
-| **Resource Tagging** | Require Environment tags | All Resources | Configurable |
+| **Resource Tagging (Presence)** | Require Environment, CostCenter, Owner tags on resource groups | Management Groups (Platform & Landing Zones) | Configurable |
+| **Tag Value Enforcement (RG)** | Enforce specific tag values on resource groups (Environment/CostCenter/Owner) | Management Groups (Platform & Landing Zones) | Configurable |
 | **Network Security** | Block RDP/SSH from Internet | Landing Zones | Configurable |
 | **Key Vault Protection** | Require purge protection | All Resources | Configurable |
 | **Activity Log Retention** | Ensure logging compliance | All Resources | Configurable |
@@ -183,6 +184,26 @@ When `deploy_core_policies = true`, the following **essential security controls*
 **Policy Modes:**
 - `DoNotEnforce` (Audit Mode) - Report violations without blocking
 - `Default` (Enforce Mode) - Block non-compliant resource deployment
+
+## 🏷️ **Tag Governance (Presence & Value)**
+
+This implementation includes practical tag governance at the management group scopes:
+
+- **Presence Enforcement (Built-in)**: Require `Environment`, `CostCenter`, `Owner` tags on resource groups at Platform and Landing Zones.
+- **Value Enforcement (Custom Policy)**: Optionally enforce specific values for those tags on resource groups.
+
+Configuration knobs:
+- `policy_enforcement_mode`: `DoNotEnforce` → Audit, `Default` → Deny.
+- `required_environment_tag`, `required_cost_center_tag`, `required_owner_tag`: Desired tag values used by value-enforcement policy.
+
+Plan & apply examples:
+```powershell
+# Generate plan (already part of defaults)
+terraform plan -out "plans/tag-value-enforce.plan"
+
+# Apply exactly the planned changes
+terraform apply "plans/tag-value-enforce.plan"
+```
 
 ## 🔐 **Secure VM Access via Azure Bastion**
 
@@ -532,6 +553,25 @@ terraform apply \
 terraform init -backend-config=backend.conf
 terraform apply
 ```
+
+## 🗂️ **Baselines & Plan Summaries**
+
+Keep plan artifacts tidy and summarized with the maintenance script:
+
+```powershell
+# Generate summaries for default baseline plans and commit/push
+pwsh -NoProfile scripts/maintain-baselines.ps1
+
+# Defaults include:
+# - plans/baseline-policy.plan
+# - plans/baseline-network.plan
+# - plans/tag-value-enforce.plan
+```
+
+Outputs:
+- plans/baseline-policy.changes.md
+- plans/baseline-network.changes.md
+- plans/tag-value-enforce.changes.md
 
 ## 📊 **Resource Outputs**
 

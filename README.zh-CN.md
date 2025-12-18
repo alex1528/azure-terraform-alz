@@ -7,7 +7,7 @@
 ## 提供的能力
 - 管理组层级：完整的 ALZ 管理组结构
 - 网络架构选型：Hub & Spoke、Virtual WAN 或无网络
-- 安全策略：8 条核心策略，支持审计或强制模式
+- 安全策略：核心策略（包含标签存在强制与可选的标签值强制），支持审计或强制模式
 - 集中式监控：Log Analytics 与数据采集规则
 - 成本可控：可选资源按需部署
 - 生产就绪：配置简单、可扩展、易维护
@@ -92,6 +92,26 @@ az network bastion rdp \
   - `validate-alz.sh`：环境与配置基础校验
   - `validate-alz-features.sh`：功能完整性校验（Compute/SSH/Monitor 等）
   - 文档：`VALIDATION_SCRIPT_ASSESSMENT.md`、`VALIDATION_SCRIPTS_GUIDE.md`
+
+## 🏷️ 标签治理（存在与值）
+
+本实现在平台与落地区域管理组范围提供如下标签治理能力：
+
+- **标签存在强制（内置策略）**：在资源组上强制要求 `Environment`、`CostCenter`、`Owner` 标签存在。
+- **标签值强制（自定义策略）**：可选地在资源组上强制标签值为指定值。
+
+配置项：
+- `policy_enforcement_mode`：`DoNotEnforce`（审计）/ `Default`（强制拒绝）。
+- `required_environment_tag`、`required_cost_center_tag`、`required_owner_tag`：用于“标签值强制”的期望值。
+
+计划与应用示例：
+```powershell
+# 生成计划（已纳入默认基线计划）
+terraform plan -out "plans/tag-value-enforce.plan"
+
+# 应用该计划
+terraform apply "plans/tag-value-enforce.plan"
+```
 
 ## 部署内容概览
 - 核心：管理组层级、（可选）订阅分配
@@ -241,6 +261,25 @@ terraform apply
 - 在 Azure Policy 面板查看合规性，审计模式下先观察再逐步强制
 - 集中日志：生产与非生产工作区 + 自动化账号
 - 成本管理：标签、命名与可选资源控制
+
+## 🗂️ 基线与计划摘要
+
+使用维护脚本整理并归档计划摘要：
+
+```powershell
+# 生成默认基线计划的摘要并自动提交/推送
+pwsh -NoProfile scripts/maintain-baselines.ps1
+
+# 默认包含：
+# - plans/baseline-policy.plan
+# - plans/baseline-network.plan
+# - plans/tag-value-enforce.plan
+```
+
+输出的摘要文件：
+- plans/baseline-policy.changes.md
+- plans/baseline-network.changes.md
+- plans/tag-value-enforce.changes.md
 
 ## 文档与资源
 - 英文总览：[README.md](README.md)

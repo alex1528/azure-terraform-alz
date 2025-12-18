@@ -23,7 +23,11 @@
     - `Environment`（平台：core-tag-env，着陆区：lz-tag-env）
     - `CostCenter`（平台：core-tag-cost，着陆区：lz-tag-cost）
     - `Owner`（平台：core-tag-owner，着陆区：lz-tag-owner）
-  - 说明：如需“固定标签值”的强制（例如 `Environment=BingoHR-ALZ`），可改用支持 `tagValue` 参数的内置策略或自定义策略。
+  - 标签值强制（可选，已提供）：通过自定义策略在资源组上强制标签值为指定值（平台与着陆区均可分配）：
+    - `Environment`（平台：core-tagv-env，着陆区：lz-tagv-env）
+    - `CostCenter`（平台：core-tagv-cost，着陆区：lz-tagv-cost）
+    - `Owner`（平台：core-tagv-owner，着陆区：lz-tagv-owner）
+  - 说明：标签值强制的生效模式由 `policy_enforcement_mode` 控制（`DoNotEnforce`→Audit，`Default`→Deny）。期望值来自 `required_environment_tag`、`required_cost_center_tag`、`required_owner_tag`。
 
 ### 验证强制标签策略
 使用计划文件或 Azure CLI 验证策略分配是否生效：
@@ -32,6 +36,7 @@
 # 直接应用已生成的策略启用计划
 terraform apply "plans/tag-policy-enable.plan"
 terraform plan -out "plans/tag-policy-extend.plan"
+terraform plan -out "plans/tag-value-enforce.plan"
 
 # 或使用 CLI 查看管理组范围的策略分配
 az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-platform" | ConvertFrom-Json | where displayName -match "Require a tag"
@@ -40,6 +45,10 @@ az policy assignment list --scope "/providers/Microsoft.Management/managementGro
 # 按标签键筛选（Environment/CostCenter/Owner）
 az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-platform" | ConvertFrom-Json | Where-Object { $_.parameters.tagName.value -in @('Environment','CostCenter','Owner') }
 az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-landingzones" | ConvertFrom-Json | Where-Object { $_.parameters.tagName.value -in @('Environment','CostCenter','Owner') }
+
+# 过滤“标签值强制”自定义策略（按显示名）
+az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-platform" | ConvertFrom-Json | Where-Object { $_.displayName -match 'Require specific .* tag value' }
+az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-landingzones" | ConvertFrom-Json | Where-Object { $_.displayName -match 'Require specific .* tag value' }
 ```
 
 ### 策略豁免（Sandbox）示例
@@ -59,6 +68,7 @@ pwsh scripts/validate-minimums.ps1 -Prefix "bingohr" -Region "eastasia"
 - 身份：检查 `bingohr-identity` / `bingohr-platform` / `bingohr-landingzones` 管理组是否存在。
 - 网络：检查 Hub VNet、Bastion、Firewall；如未检测到 VPN/ExpressRoute 网关则给出提醒。
 - 资源组织：检查关键资源组上是否具备建议标签；在平台/着陆区范围是否存在与 Tag 相关的策略分配。
+ - 标签值强制：如启用 `tag-value-enforce.plan`，可在 CLI 输出中看到 `Require specific ... tag value` 的策略分配；生效模式由 `policy_enforcement_mode` 控制。
 
 ## 后续可选强化
 - 自动化 RBAC：在管理组范围为平台、着陆区、运营团队绑定 Entra 组与最小权限角色。

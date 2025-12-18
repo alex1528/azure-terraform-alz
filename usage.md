@@ -202,6 +202,22 @@ terraform apply
 - 常见策略范围：加密、HTTPS 强制、RDP/SSH 入站限制、KeyVault 清除保护、Activity Log 保留、区域白名单、标签要求等。
 - 在 Azure Policy 面板查看合规性，确认后再切换至强制模式。
 
+### 标签治理（存在与值）
+- 标签存在强制（内置策略）：在平台与落地区域管理组范围，资源组必须包含 `Environment`、`CostCenter`、`Owner` 标签。
+- 标签值强制（自定义策略，可选）：在资源组上将上述标签的值强制为期望值。
+
+配置项：
+- `policy_enforcement_mode`：`DoNotEnforce`（审计）/ `Default`（强制拒绝）。
+- `required_environment_tag`、`required_cost_center_tag`、`required_owner_tag`：用于“标签值强制”的期望值。
+
+生成与应用计划：
+```powershell
+terraform plan -out "plans/tag-value-enforce.plan"
+terraform apply "plans/tag-value-enforce.plan"
+```
+
+注意：当策略处于强制模式（`Default`）且启用“网络入站限制”时，请通过 Azure Bastion 管理 VM，避免互联网直连 SSH/RDP 被策略拒绝。
+
 ## 常见问题（FAQ）
 - 如何为后端存储赋权？
   - 使用 AAD 鉴权需在存储账户上授予 `Storage Blob Data Contributor`，并在资源组上至少有 `Reader`。
@@ -303,6 +319,8 @@ ssh_public_key_path = "~/.ssh/id_rsa.pub"
 - **TCP 3389（RDP）**：所有源允许（Windows 管理）
 - **入站全拒绝**：其他协议/端口
 
+提示：若启用了“阻止互联网 SSH/RDP”策略并处于强制模式，请改为使用 Azure Bastion 访问 VM（参考 README 的 Bastion 章节）。
+
 ### Linux VM 部署示例
 ```bash
 # 确保有 SSH 密钥对
@@ -386,3 +404,21 @@ ssh -i ~/.ssh/id_rsa azureuser@20.150.100.50
 ---
 
 如需深入了解：Azure Landing Zones、Azure Policy、Hub-Spoke 与 Virtual WAN 官方文档。
+
+## 基线与计划摘要（维护脚本）
+
+使用维护脚本整理计划与摘要并自动提交：
+
+```powershell
+pwsh -NoProfile scripts/maintain-baselines.ps1
+```
+
+默认包含计划：
+- plans/baseline-policy.plan
+- plans/baseline-network.plan
+- plans/tag-value-enforce.plan
+
+输出摘要文件：
+- plans/baseline-policy.changes.md
+- plans/baseline-network.changes.md
+- plans/tag-value-enforce.changes.md
