@@ -19,11 +19,11 @@
 ## 资源组织（命名与标签）
   - 命名：统一前缀 `bingohr-` + 组件 + 区域 + 后缀（例如 `bingohr-connectivity-eastasia-rg`）。
   - 标签：为资源与资源组附加 `CostCenter`、`Environment`、`ManagedBy`、`Owner`、`Project` 等常用键。
-  - 现状（已实施）：在平台与着陆区管理组范围启用内置策略 “Require a tag and its value on resource groups”，强制以下标签：
-    - `Environment = BingoHR-ALZ`（平台：core-tag-env，着陆区：lz-tag-env）
-    - `CostCenter = ALZ`（平台：core-tag-cost，着陆区：lz-tag-cost）
-    - `Owner = ALZ`（平台：core-tag-owner，着陆区：lz-tag-owner）
-  - 说明：可通过模块变量覆盖默认值（见 modules/core_policies/variables.tf）。
+  - 现状（已实施）：在平台与着陆区管理组范围启用内置策略，强制以下标签“存在”：
+    - `Environment`（平台：core-tag-env，着陆区：lz-tag-env）
+    - `CostCenter`（平台：core-tag-cost，着陆区：lz-tag-cost）
+    - `Owner`（平台：core-tag-owner，着陆区：lz-tag-owner）
+  - 说明：如需“固定标签值”的强制（例如 `Environment=BingoHR-ALZ`），可改用支持 `tagValue` 参数的内置策略或自定义策略。
 
 ### 验证强制标签策略
 使用计划文件或 Azure CLI 验证策略分配是否生效：

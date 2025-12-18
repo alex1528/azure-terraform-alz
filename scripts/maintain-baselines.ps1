@@ -1,5 +1,9 @@
 param(
-    [string[]]$PlanPaths = @("plans/baseline-policy.plan", "plans/baseline-network.plan"),
+    [string[]]$PlanPaths = @(
+        "plans/baseline-policy.plan",
+        "plans/baseline-network.plan",
+        "plans/tag-value-enforce.plan"
+    ),
     [switch]$NoPush
 )
 

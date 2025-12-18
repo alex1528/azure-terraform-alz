@@ -103,6 +103,8 @@ module "core_policies" {
   # Policy parameters
   allowed_locations        = [var.location] # Allow primary location by default
   required_environment_tag = "BingoHR-ALZ"
+  required_cost_center_tag = try(var.tags["CostCenter"], "ALZ")
+  required_owner_tag       = try(var.tags["Owner"], "ALZ")
 
   # Policy initiative and exemptions
   create_policy_initiative  = false

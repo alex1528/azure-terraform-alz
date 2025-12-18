@@ -1,7 +1,7 @@
-# Baseline Change Summary: baseline-network
+# Baseline Change Summary: tag-value-enforce
 
 Date: 2025-12-18
-Plan file: plans/baseline-network.plan
+Plan file: plans/tag-value-enforce.plan
 Summary: 0 to add, 0 to change, 0 to destroy
 
 Detailed Resource Changes (exact instances):

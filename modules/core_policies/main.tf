@@ -55,8 +55,42 @@ locals {
     # Resource Tagging
     require_environment_tag = {
       policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
-      display_name         = "Require a tag and its value on resource groups"
-      description          = "Enforces a required tag and its value on resource groups"
+      display_name         = "Require a tag on resource groups"
+      description          = "Enforces presence of a required tag on resource groups"
+      parameters = {
+        tagName = {
+          value = "Environment"
+        }
+      }
+    }
+
+    require_cost_center_tag = {
+      policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
+      display_name         = "Require a tag on resource groups"
+      description          = "Enforces presence of CostCenter tag on resource groups"
+      parameters = {
+        tagName = {
+          value = "CostCenter"
+        }
+      }
+    }
+
+    require_owner_tag = {
+      policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
+      display_name         = "Require a tag on resource groups"
+      description          = "Enforces presence of Owner tag on resource groups"
+      parameters = {
+        tagName = {
+          value = "Owner"
+        }
+      }
+    }
+
+    # Tag Value Enforcement (Custom Policy Definition below)
+    enforce_environment_tag_value = {
+      policy_definition_id = azurerm_policy_definition.rg_require_tag_value.id
+      display_name         = "Require specific Environment tag value on resource groups"
+      description          = "Enforces that resource groups have Environment tag with the specified value"
       parameters = {
         tagName = {
           value = "Environment"
@@ -64,13 +98,16 @@ locals {
         tagValue = {
           value = var.required_environment_tag
         }
+        effect = {
+          value = var.policy_enforcement_mode == "Default" ? "Deny" : "Audit"
+        }
       }
     }
 
-    require_cost_center_tag = {
-      policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
-      display_name         = "Require a tag and its value on resource groups"
-      description          = "Enforces a required CostCenter tag and its value on resource groups"
+    enforce_cost_center_tag_value = {
+      policy_definition_id = azurerm_policy_definition.rg_require_tag_value.id
+      display_name         = "Require specific CostCenter tag value on resource groups"
+      description          = "Enforces that resource groups have CostCenter tag with the specified value"
       parameters = {
         tagName = {
           value = "CostCenter"
@@ -78,19 +115,25 @@ locals {
         tagValue = {
           value = var.required_cost_center_tag
         }
+        effect = {
+          value = var.policy_enforcement_mode == "Default" ? "Deny" : "Audit"
+        }
       }
     }
 
-    require_owner_tag = {
-      policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
-      display_name         = "Require a tag and its value on resource groups"
-      description          = "Enforces a required Owner tag and its value on resource groups"
+    enforce_owner_tag_value = {
+      policy_definition_id = azurerm_policy_definition.rg_require_tag_value.id
+      display_name         = "Require specific Owner tag value on resource groups"
+      description          = "Enforces that resource groups have Owner tag with the specified value"
       parameters = {
         tagName = {
           value = "Owner"
         }
         tagValue = {
           value = var.required_owner_tag
+        }
+        effect = {
+          value = var.policy_enforcement_mode == "Default" ? "Deny" : "Audit"
         }
       }
     }
@@ -132,6 +175,9 @@ locals {
     require_environment_tag             = "core-tag-env"
     require_cost_center_tag             = "core-tag-cost"
     require_owner_tag                   = "core-tag-owner"
+    enforce_environment_tag_value       = "core-tagv-env"
+    enforce_cost_center_tag_value       = "core-tagv-cost"
+    enforce_owner_tag_value             = "core-tagv-owner"
     deny_rdp_from_internet              = "core-deny-rdp"
     deny_ssh_from_internet              = "core-deny-ssh"
     require_key_vault_purge_protection  = "core-kv-purge"
@@ -147,6 +193,9 @@ locals {
     require_environment_tag = "lz-tag-env"
     require_cost_center_tag = "lz-tag-cost"
     require_owner_tag       = "lz-tag-owner"
+    enforce_environment_tag_value = "lz-tagv-env"
+    enforce_cost_center_tag_value = "lz-tagv-cost"
+    enforce_owner_tag_value       = "lz-tagv-owner"
   }
 
   # Selected policy keys to assign (exclude problematic/unsupported ones)
@@ -158,6 +207,9 @@ locals {
     "require_environment_tag",
     "require_cost_center_tag",
     "require_owner_tag",
+    "enforce_environment_tag_value",
+    "enforce_cost_center_tag_value",
+    "enforce_owner_tag_value",
     "require_key_vault_purge_protection",
     "require_activity_log_retention",
   ]
@@ -171,7 +223,72 @@ locals {
     "require_environment_tag",
     "require_cost_center_tag",
     "require_owner_tag",
+    "enforce_environment_tag_value",
+    "enforce_cost_center_tag_value",
+    "enforce_owner_tag_value",
   ]
+}
+
+# ============================================================================
+# CUSTOM POLICY DEFINITION: REQUIRE TAG VALUE ON RESOURCE GROUPS
+# ============================================================================
+
+resource "azurerm_policy_definition" "rg_require_tag_value" {
+  name         = "rg-require-tag-value"
+  display_name = "Require a specific tag value on resource groups"
+  policy_type  = "Custom"
+  mode         = "All"
+  description  = "Deny resource group creation/update when the specified tag is missing or its value differs from the required value."
+
+  metadata = jsonencode({
+    category = "Tags"
+    version  = "1.0.0"
+  })
+
+  parameters = jsonencode({
+    tagName = {
+      type        = "String"
+      metadata    = { displayName = "Tag Name" }
+      default     = "Environment"
+    }
+    tagValue = {
+      type        = "String"
+      metadata    = { displayName = "Required Tag Value" }
+      default     = "ALZ"
+    }
+    effect = {
+      type     = "String"
+      metadata = { displayName = "Effect" }
+      allowedValues = ["Audit", "Deny", "Disabled"]
+      default  = "Deny"
+    }
+  })
+
+  policy_rule = jsonencode({
+    if = {
+      allOf = [
+        {
+          field  = "type"
+          equals = "Microsoft.Resources/subscriptions/resourceGroups"
+        },
+        {
+          anyOf = [
+            {
+              field    = "[concat('tags[', parameters('tagName'), ']')]"
+              notEquals = "[parameters('tagValue')]"
+            },
+            {
+              field  = "[concat('tags[', parameters('tagName'), ']')]"
+              exists = "false"
+            }
+          ]
+        }
+      ]
+    }
+    then = {
+      effect = "[parameters('effect')]"
+    }
+  })
 }
 
 # ============================================================================

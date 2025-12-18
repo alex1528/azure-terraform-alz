@@ -101,7 +101,7 @@ $scopes = @("/providers/Microsoft.Management/managementGroups/$Prefix-platform",
 $requiredTagKeys = @("Environment","CostCenter","Owner")
 foreach ($s in $scopes) {
     try {
-        $assigns = az policy assignment list --scope $s --disable-scope-strict --only-show-errors | ConvertFrom-Json
+        $assigns = az policy assignment list --scope $s | ConvertFrom-Json
         if (-not $assigns) { Write-Result -Title "Policy:$s" -Status "WARN" -Detail "no assignments found"; continue }
 
         $detected = @{}
