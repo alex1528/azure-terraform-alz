@@ -114,6 +114,7 @@ locals {
     require_vm_backup       = "lz-vm-bkup"
     deny_rdp_from_internet  = "lz-deny-rdp"
     deny_ssh_from_internet  = "lz-deny-ssh"
+    require_environment_tag = "lz-tag-env"
   }
 
   # Selected policy keys to assign (exclude problematic/unsupported ones)
@@ -122,6 +123,7 @@ locals {
     "require_sql_tde",
     "require_vm_backup",
     "allowed_locations",
+    "require_environment_tag",
     "require_key_vault_purge_protection",
     "require_activity_log_retention",
   ]
@@ -132,6 +134,7 @@ locals {
     "require_vm_backup",
     "deny_rdp_from_internet",
     "deny_ssh_from_internet",
+    "require_environment_tag",
   ]
 }
 
