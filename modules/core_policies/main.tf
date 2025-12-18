@@ -67,6 +67,34 @@ locals {
       }
     }
 
+    require_cost_center_tag = {
+      policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
+      display_name         = "Require a tag and its value on resource groups"
+      description          = "Enforces a required CostCenter tag and its value on resource groups"
+      parameters = {
+        tagName = {
+          value = "CostCenter"
+        }
+        tagValue = {
+          value = var.required_cost_center_tag
+        }
+      }
+    }
+
+    require_owner_tag = {
+      policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/96670d01-0a4d-4649-9c89-2d3abc0a5025"
+      display_name         = "Require a tag and its value on resource groups"
+      description          = "Enforces a required Owner tag and its value on resource groups"
+      parameters = {
+        tagName = {
+          value = "Owner"
+        }
+        tagValue = {
+          value = var.required_owner_tag
+        }
+      }
+    }
+
     # Network Security
     deny_rdp_from_internet = {
       policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/e372f825-a257-4fb8-9175-797a8a8627d6"
@@ -102,6 +130,8 @@ locals {
     require_vm_backup                   = "core-vm-bkup"
     allowed_locations                   = "core-allowedloc"
     require_environment_tag             = "core-tag-env"
+    require_cost_center_tag             = "core-tag-cost"
+    require_owner_tag                   = "core-tag-owner"
     deny_rdp_from_internet              = "core-deny-rdp"
     deny_ssh_from_internet              = "core-deny-ssh"
     require_key_vault_purge_protection  = "core-kv-purge"
@@ -115,6 +145,8 @@ locals {
     deny_rdp_from_internet  = "lz-deny-rdp"
     deny_ssh_from_internet  = "lz-deny-ssh"
     require_environment_tag = "lz-tag-env"
+    require_cost_center_tag = "lz-tag-cost"
+    require_owner_tag       = "lz-tag-owner"
   }
 
   # Selected policy keys to assign (exclude problematic/unsupported ones)
@@ -124,6 +156,8 @@ locals {
     "require_vm_backup",
     "allowed_locations",
     "require_environment_tag",
+    "require_cost_center_tag",
+    "require_owner_tag",
     "require_key_vault_purge_protection",
     "require_activity_log_retention",
   ]
@@ -135,6 +169,8 @@ locals {
     "deny_rdp_from_internet",
     "deny_ssh_from_internet",
     "require_environment_tag",
+    "require_cost_center_tag",
+    "require_owner_tag",
   ]
 }
 

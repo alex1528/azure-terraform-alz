@@ -17,13 +17,17 @@ function Write-PlanSummary {
     $planText = terraform show "$PlanPath" | Out-String
 
     # Extract plan counts
-    $planLine = [Regex]::Match($planText, 'Plan:\s+(\d+)\s+to add,\s+(\d+)\s+to change,\s+(\d+)\s+to destroy')
+    $planLine = [Regex]::Match($planText, 'Plan:\s*(\d+)\s*to add,\s*(\d+)\s*to change,\s*(\d+)\s*to destroy', [System.Text.RegularExpressions.RegexOptions]::Multiline)
     if (!$planLine.Success) {
-        throw "Unable to parse plan counts for $PlanPath"
+        # Fallback: derive counts from resource change markers
+        $addCount      = ([Regex]::Matches($planText, '^\s*#\s+.+?\s+will be created', [System.Text.RegularExpressions.RegexOptions]::Multiline)).Count
+        $changeCount   = ([Regex]::Matches($planText, '^\s*#\s+.+?\s+will be updated in-place', [System.Text.RegularExpressions.RegexOptions]::Multiline)).Count
+        $destroyCount  = ([Regex]::Matches($planText, '^\s*#\s+.+?\s+will be destroyed', [System.Text.RegularExpressions.RegexOptions]::Multiline)).Count
+    } else {
+        $addCount = $planLine.Groups[1].Value
+        $changeCount = $planLine.Groups[2].Value
+        $destroyCount = $planLine.Groups[3].Value
     }
-    $addCount = $planLine.Groups[1].Value
-    $changeCount = $planLine.Groups[2].Value
-    $destroyCount = $planLine.Groups[3].Value
 
     # Extract exact resource instance changes
     $resourceMatches = [Regex]::Matches($planText, '^\s*#\s+(.+?)\s+will be\s+(.+)$', [System.Text.RegularExpressions.RegexOptions]::Multiline)
@@ -31,7 +35,7 @@ function Write-PlanSummary {
     foreach ($m in $resourceMatches) {
         $addr = $m.Groups[1].Value.Trim()
         $action = $m.Groups[2].Value.Trim()
-        $changedResources += "- $addr: $action"
+        $changedResources += "- ${addr}: ${action}"
     }
 
     # Build summary markdown

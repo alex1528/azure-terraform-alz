@@ -19,10 +19,11 @@
 ## 资源组织（命名与标签）
   - 命名：统一前缀 `bingohr-` + 组件 + 区域 + 后缀（例如 `bingohr-connectivity-eastasia-rg`）。
   - 标签：为资源与资源组附加 `CostCenter`、`Environment`、`ManagedBy`、`Owner`、`Project` 等常用键。
-  - 现状（已实施）：在平台与着陆区管理组范围启用内置策略 “Require a tag and its value on resource groups”，强制 `Environment=BingoHR-ALZ` 标签。
-    - 平台管理组策略名：`core-tag-env`
-    - 着陆区管理组策略名：`lz-tag-env`
-  - 建议补充：可按需扩展到更多必需标签（如 `CostCenter`、`Owner`），并在工作负载落地前通过策略合规门控。
+  - 现状（已实施）：在平台与着陆区管理组范围启用内置策略 “Require a tag and its value on resource groups”，强制以下标签：
+    - `Environment = BingoHR-ALZ`（平台：core-tag-env，着陆区：lz-tag-env）
+    - `CostCenter = ALZ`（平台：core-tag-cost，着陆区：lz-tag-cost）
+    - `Owner = ALZ`（平台：core-tag-owner，着陆区：lz-tag-owner）
+  - 说明：可通过模块变量覆盖默认值（见 modules/core_policies/variables.tf）。
 
 ### 验证强制标签策略
 使用计划文件或 Azure CLI 验证策略分配是否生效：
@@ -30,10 +31,15 @@
 ```powershell
 # 直接应用已生成的策略启用计划
 terraform apply "plans/tag-policy-enable.plan"
+terraform plan -out "plans/tag-policy-extend.plan"
 
 # 或使用 CLI 查看管理组范围的策略分配
 az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-platform" | ConvertFrom-Json | where displayName -match "Require a tag"
 az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-landingzones" | ConvertFrom-Json | where displayName -match "Require a tag"
+
+# 按标签键筛选（Environment/CostCenter/Owner）
+az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-platform" | ConvertFrom-Json | Where-Object { $_.parameters.tagName.value -in @('Environment','CostCenter','Owner') }
+az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-landingzones" | ConvertFrom-Json | Where-Object { $_.parameters.tagName.value -in @('Environment','CostCenter','Owner') }
 ```
 
 ### 策略豁免（Sandbox）示例

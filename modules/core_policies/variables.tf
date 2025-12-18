@@ -60,6 +60,18 @@ variable "required_environment_tag" {
   default     = "ALZ"
 }
 
+variable "required_cost_center_tag" {
+  description = "Required value for the CostCenter tag"
+  type        = string
+  default     = "ALZ"
+}
+
+variable "required_owner_tag" {
+  description = "Required value for the Owner tag"
+  type        = string
+  default     = "ALZ"
+}
+
 # ============================================================================
 # POLICY INITIATIVE CONFIGURATION
 # ============================================================================

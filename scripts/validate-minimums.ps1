@@ -98,15 +98,32 @@ foreach ($name in $rgNames) {
 # Policy assignment for required tags (optional check)
 Write-Host "Checking tag policy assignments on platform/landingzones MG..." -ForegroundColor Cyan
 $scopes = @("/providers/Microsoft.Management/managementGroups/$Prefix-platform","/providers/Microsoft.Management/managementGroups/$Prefix-landingzones")
+$requiredTagKeys = @("Environment","CostCenter","Owner")
 foreach ($s in $scopes) {
     try {
         $assigns = az policy assignment list --scope $s --disable-scope-strict --only-show-errors | ConvertFrom-Json
-        $hasTagReq = $false
+        if (-not $assigns) { Write-Result -Title "Policy:$s" -Status "WARN" -Detail "no assignments found"; continue }
+
+        $detected = @{}
+        foreach ($k in $requiredTagKeys) { $detected[$k] = $false }
+
         foreach ($a in $assigns) {
-            if ($a.policyDefinitionId -match '/providers/Microsoft.Authorization/policyDefinitions/' -and ($a.displayName -match 'Require a tag' -or $a.policyDefinitionId -match 'tags')) { $hasTagReq = $true; break }
+            $pd = $a.policyDefinitionId
+            $dn = $a.displayName
+            $p  = $a.parameters
+            $tagName = $null
+            if ($p -and $p.tagName -and $p.tagName.value) { $tagName = $p.tagName.value }
+            if ($pd -match '/providers/Microsoft.Authorization/policyDefinitions/' -and ($dn -match 'Require a tag' -or $pd -match 'tags')) {
+                if ($tagName -and $requiredTagKeys -contains $tagName) { $detected[$tagName] = $true }
+            }
         }
-        if ($hasTagReq) { Write-Result -Title "Policy:$s" -Status "OK" -Detail "tag policy detected" }
-        else { Write-Result -Title "Policy:$s" -Status "WARN" -Detail "no tag-enforcement policy found" }
+
+        $missing = ($requiredTagKeys | Where-Object { -not $detected[$_] })
+        if ($missing.Count -eq 0) {
+            Write-Result -Title "Policy:$s" -Status "OK" -Detail "Environment/CostCenter/Owner enforced"
+        } else {
+            Write-Result -Title "Policy:$s" -Status "WARN" -Detail ("missing: {0}" -f ($missing -join ', '))
+        }
     } catch { Write-Result -Title "Policy:$s" -Status "WARN" -Detail "query failed" }
 }
 
