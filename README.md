@@ -566,12 +566,30 @@ pwsh -NoProfile scripts/maintain-baselines.ps1
 # - plans/baseline-policy.plan
 # - plans/baseline-network.plan
 # - plans/tag-value-enforce.plan
+# - plans/baseline-defender.plan
 ```
 
 Outputs:
 - plans/baseline-policy.changes.md
 - plans/baseline-network.changes.md
 - plans/tag-value-enforce.changes.md
+- plans/baseline-defender.changes.md
+
+### Compliance Snapshot (Auto-archived)
+
+Maintenance script now exports compliance snapshots (JSON + Markdown) and auto-commits/pushes:
+
+```powershell
+# One-click maintenance + compliance snapshot
+pwsh scripts/maintain-baselines.ps1
+
+# On-demand snapshot (artifacts under plans/compliance)
+pwsh scripts/export-compliance-snapshot.ps1
+
+# Schedule daily/weekly maintenance + snapshot
+pwsh scripts/setup-maintenance-schedule.ps1 -CreateDaily
+pwsh scripts/setup-maintenance-schedule.ps1 -CreateWeekly -WeeklyDay Sunday -WeeklyTime 02:30
+```
 
 ## 📊 **Resource Outputs**
 

@@ -274,12 +274,30 @@ pwsh -NoProfile scripts/maintain-baselines.ps1
 # - plans/baseline-policy.plan
 # - plans/baseline-network.plan
 # - plans/tag-value-enforce.plan
+# - plans/baseline-defender.plan
 ```
 
 输出的摘要文件：
 - plans/baseline-policy.changes.md
 - plans/baseline-network.changes.md
 - plans/tag-value-enforce.changes.md
+- plans/baseline-defender.changes.md
+
+### 合规快照（自动归档）
+
+维护脚本结尾会导出合规快照（JSON + Markdown）并自动提交/推送：
+
+```powershell
+# 一键维护 + 合规快照
+pwsh scripts/maintain-baselines.ps1
+
+# 按需导出（产物保存至 plans/compliance）
+pwsh scripts/export-compliance-snapshot.ps1
+
+# 注册每日/每周计划任务（维护 + 快照）
+pwsh scripts/setup-maintenance-schedule.ps1 -CreateDaily
+pwsh scripts/setup-maintenance-schedule.ps1 -CreateWeekly -WeeklyDay Sunday -WeeklyTime 02:30
+```
 
 ## 文档与资源
 - 英文总览：[README.md](README.md)

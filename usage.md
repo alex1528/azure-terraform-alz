@@ -189,6 +189,37 @@ terraform init -backend-config=backend.conf
 terraform apply
 ```
 
+## 基线维护与合规快照
+
+使用维护脚本整理并归档计划摘要，同时自动导出合规快照：
+
+```powershell
+# 一键维护（默认：刷新摘要 + 导出合规快照 + 自动提交/推送）
+pwsh scripts/maintain-baselines.ps1
+
+# 默认基线计划包含：
+# - plans/baseline-policy.plan
+# - plans/baseline-network.plan
+# - plans/tag-value-enforce.plan
+# - plans/baseline-defender.plan
+
+# 按需导出合规快照（产物保存在 plans/compliance 下）
+pwsh scripts/export-compliance-snapshot.ps1
+
+# 注册每日/每周计划任务（维护 + 快照）
+pwsh scripts/setup-maintenance-schedule.ps1 -CreateDaily
+pwsh scripts/setup-maintenance-schedule.ps1 -CreateWeekly -WeeklyDay Sunday -WeeklyTime 02:30
+```
+
+维护脚本可选参数：
+- `-SkipComplianceSnapshot`：跳过合规快照导出（仅刷新摘要与提交）。
+
+生成的摘要文件示例：
+- plans/baseline-policy.changes.md
+- plans/baseline-network.changes.md
+- plans/tag-value-enforce.changes.md
+- plans/baseline-defender.changes.md
+
 ## 部署产物（Outputs）
 - 管理组 ID：用于后续订阅分配与策略作用域绑定。
 - 网络资源 ID：Hub VNet 或 vWAN 资源，便于挂载 Spoke。
