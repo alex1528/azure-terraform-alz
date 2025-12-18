@@ -199,6 +199,68 @@ module "compute" {
 }
 
 # ============================================================================
+# WORKLOAD: WEB + MYSQL (PROD)
+# ============================================================================
+
+module "workload_web_mysql_prod" {
+  source = "./modules/workload_web_mysql"
+
+  env             = "prod"
+  resource_prefix = var.resource_prefix
+  location        = var.location
+  tags            = merge(local.common_tags, { Environment = "prod" })
+
+  vm_size             = var.vm_size
+  admin_username      = var.admin_username
+  ssh_public_key_path = var.ssh_public_key_path
+  generate_ssh_key    = var.generate_ssh_key
+
+  # Networking
+  create_vnet        = true
+  existing_subnet_id = ""
+  assign_public_ip   = true
+  bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
+
+  # Database
+  db_username = var.db_username
+  db_password = var.db_password
+  db_name     = var.db_name
+
+  depends_on = [module.connectivity]
+}
+
+# ============================================================================
+# WORKLOAD: WEB + MYSQL (NONPROD)
+# ============================================================================
+
+module "workload_web_mysql_nonprod" {
+  source = "./modules/workload_web_mysql"
+
+  env             = "nonprod"
+  resource_prefix = var.resource_prefix
+  location        = var.location
+  tags            = merge(local.common_tags, { Environment = "nonprod" })
+
+  vm_size             = var.vm_size
+  admin_username      = var.admin_username
+  ssh_public_key_path = var.ssh_public_key_path
+  generate_ssh_key    = var.generate_ssh_key
+
+  # Networking
+  create_vnet        = true
+  existing_subnet_id = ""
+  assign_public_ip   = true
+  bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
+
+  # Database
+  db_username = var.db_username
+  db_password = var.db_password
+  db_name     = var.db_name
+
+  depends_on = [module.connectivity]
+}
+
+# ============================================================================
 # DIAGNOSTIC SETTINGS FOR VM MONITORING
 # ============================================================================
 

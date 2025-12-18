@@ -235,3 +235,33 @@ output "ssh_public_key_openssh" {
   description = "Public SSH key in OpenSSH format (only available when generate_ssh_key=true)"
   value       = var.deploy_compute_resources ? module.compute.ssh_public_key_openssh : null
 }
+
+# ============================================================================
+# WORKLOAD: WEB + MYSQL OUTPUTS
+# ============================================================================
+
+output "workload_prod_web_public_ip" {
+  description = "Public IP of the prod web VM (if assigned)"
+  value       = module.workload_web_mysql_prod.web_public_ip
+}
+
+output "workload_nonprod_web_public_ip" {
+  description = "Public IP of the nonprod web VM (if assigned)"
+  value       = module.workload_web_mysql_nonprod.web_public_ip
+}
+
+output "workload_prod_private_ips" {
+  description = "Private IPs for prod web and mysql VMs"
+  value = {
+    web   = module.workload_web_mysql_prod.web_private_ip
+    mysql = module.workload_web_mysql_prod.mysql_private_ip
+  }
+}
+
+output "workload_nonprod_private_ips" {
+  description = "Private IPs for nonprod web and mysql VMs"
+  value = {
+    web   = module.workload_web_mysql_nonprod.web_private_ip
+    mysql = module.workload_web_mysql_nonprod.mysql_private_ip
+  }
+}

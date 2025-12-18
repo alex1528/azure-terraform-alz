@@ -355,6 +355,29 @@ variable "existing_subnet_id" {
 }
 
 # ============================================================================
+# WORKLOAD: WEB + MYSQL DATABASE CONFIGURATION
+# ============================================================================
+
+variable "db_username" {
+  description = "MySQL application user name for workload modules"
+  type        = string
+  default     = "appuser"
+}
+
+variable "db_password" {
+  description = "MySQL application user password for workload modules"
+  type        = string
+  default     = "Passw0rd123!"
+  sensitive   = true
+}
+
+variable "db_name" {
+  description = "MySQL database name for workload modules"
+  type        = string
+  default     = "appdb"
+}
+
+# ============================================================================
 # AZURE MONITOR CONFIGURATION
 # ============================================================================
 
