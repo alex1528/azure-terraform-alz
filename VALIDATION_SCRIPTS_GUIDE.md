@@ -121,6 +121,32 @@ az policy assignment list --scope $lzScope       | ConvertFrom-Json | Where-Obje
 - `policy_enforcement_mode` 控制生效模式：`DoNotEnforce`（审计）/ `Default`（强制拒绝）。
 - 期望值来自 `required_environment_tag`、`required_cost_center_tag`、`required_owner_tag`。
 
+### 第 2.6 步：基线与合规快照验证（摘要 + 报告归档）
+```powershell
+# 一键维护：刷新默认基线摘要并导出合规快照（自动提交/推送）
+pwsh scripts/maintain-baselines.ps1
+
+# 默认基线计划包含：
+# - plans/baseline-policy.plan
+# - plans/baseline-network.plan
+# - plans/tag-value-enforce.plan
+# - plans/baseline-defender.plan
+
+# 合规快照产物位置（JSON + Markdown）：
+# - plans/compliance/compliance-<yyyy-MM-dd_HH-mm-ss>.json
+# - plans/compliance/compliance-<yyyy-MM-dd_HH-mm-ss>.md
+
+# 按需导出合规快照（不跑维护）
+pwsh scripts/export-compliance-snapshot.ps1
+
+# 可选：只生成 Defender 基线（局部计划，谨慎使用 -target）
+terraform plan -out "plans/baseline-defender.plan" \
+   -target "module.optional_resources.azurerm_security_center_subscription_pricing.plan" \
+   -target "module.optional_resources.azurerm_security_center_auto_provisioning.this" \
+   -target "module.optional_resources.azurerm_security_center_workspace.this"
+```
+注：`-target` 仅用于局部基线归档或异常修复场景，不代表全量计划。
+
 ### 第 3 步：SSH 密钥验证
 ```bash
 bash ssh-key-demo.sh --demo
@@ -226,6 +252,9 @@ echo -e "✅ 所有验证通过！可以执行 terraform apply"
 | `show-vm-info.sh` | 脚本 | VM 信息展示 |
 | `terraform validate` | 命令 | 配置语法 |
 | `terraform plan` | 命令 | 完整资源计划 |
+| `scripts/maintain-baselines.ps1` | 脚本 | 计划摘要维护 + 合规快照归档（自动提交/推送） |
+| `scripts/export-compliance-snapshot.ps1` | 脚本 | 管理组/订阅合规快照（JSON+Markdown）导出 |
+| `scripts/setup-maintenance-schedule.ps1` | 脚本 | 注册每日/每周维护计划任务（含快照） |
 
 ---
 
