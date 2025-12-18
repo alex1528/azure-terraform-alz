@@ -96,6 +96,19 @@ resource "azurerm_network_security_group" "web_nsg" {
     source_address_prefix      = var.bastion_source_cidr
     destination_address_prefix = "*"
   }
+
+  # Allow Azure platform IP used by Bastion/health probe
+  security_rule {
+    name                       = "AllowSSHFromAzure168"
+    priority                   = 103
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "168.63.129.16"
+    destination_address_prefix = "*"
+  }
 }
 
 resource "azurerm_network_security_group" "mysql_nsg" {
@@ -113,6 +126,45 @@ resource "azurerm_network_security_group" "mysql_nsg" {
     source_port_range          = "*"
     destination_port_range     = "3306"
     source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "*"
+  }
+
+  # Allow SSH from Bastion subnet
+  security_rule {
+    name                       = "AllowSSHFromBastion"
+    priority                   = 102
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = var.bastion_source_cidr
+    destination_address_prefix = "*"
+  }
+
+  # Allow Azure platform IP used by Bastion/health probe
+  security_rule {
+    name                       = "AllowSSHFromAzure168"
+    priority                   = 103
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "168.63.129.16"
+    destination_address_prefix = "*"
+  }
+
+  # Deny SSH from Internet fallback
+  security_rule {
+    name                       = "DenySSHInternet"
+    priority                   = 121
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 }
@@ -334,6 +386,10 @@ resource "azurerm_linux_virtual_machine" "web" {
   admin_username      = var.admin_username
   disable_password_authentication = true
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   admin_ssh_key {
     username   = var.admin_username
     public_key = var.generate_ssh_key ? tls_private_key.vm_key[0].public_key_openssh : file(var.ssh_public_key_path)
@@ -389,6 +445,10 @@ resource "azurerm_linux_virtual_machine" "mysql" {
   admin_username      = var.admin_username
   disable_password_authentication = true
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   admin_ssh_key {
     username   = var.admin_username
     public_key = var.generate_ssh_key ? tls_private_key.vm_key[0].public_key_openssh : file(var.ssh_public_key_path)
@@ -417,7 +477,7 @@ resource "azurerm_virtual_machine_extension" "web_aad_login" {
   name                 = "AADLoginForLinux"
   virtual_machine_id   = azurerm_linux_virtual_machine.web.id
   publisher            = "Microsoft.Azure.ActiveDirectory"
-  type                 = "AADLoginForLinux"
+  type                 = "AADSSHLoginForLinux"
   type_handler_version = "1.0"
 }
 
@@ -426,6 +486,6 @@ resource "azurerm_virtual_machine_extension" "mysql_aad_login" {
   name                 = "AADLoginForLinux"
   virtual_machine_id   = azurerm_linux_virtual_machine.mysql.id
   publisher            = "Microsoft.Azure.ActiveDirectory"
-  type                 = "AADLoginForLinux"
+  type                 = "AADSSHLoginForLinux"
   type_handler_version = "1.0"
 }

@@ -231,6 +231,9 @@ module "workload_web_mysql_prod" {
   assign_public_ip   = true
   bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
 
+  # Enable AAD login extensions on VMs
+  enable_aad_login = true
+
   # Database
   db_username = var.db_username
   db_password = var.db_password
@@ -261,6 +264,9 @@ module "workload_web_mysql_nonprod" {
   existing_subnet_id = ""
   assign_public_ip   = true
   bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
+
+  # Enable AAD login extensions on VMs
+  enable_aad_login = true
 
   # Database
   db_username = var.db_username
