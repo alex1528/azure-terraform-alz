@@ -2,7 +2,8 @@ param(
     [string[]]$PlanPaths = @(
         "plans/baseline-policy.plan",
         "plans/baseline-network.plan",
-        "plans/tag-value-enforce.plan"
+        "plans/tag-value-enforce.plan",
+        "plans/baseline-defender.plan"
     ),
     [switch]$NoPush,
     [switch]$SkipComplianceSnapshot
@@ -111,6 +112,22 @@ if (-not $SkipComplianceSnapshot) {
         # Use pwsh to run exporter in the repo context
         pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File "scripts/export-compliance-snapshot.ps1" | Out-Null
         Write-Host "Compliance snapshot exported." -ForegroundColor Green
+
+        # Stage and commit compliance artifacts
+        Write-Host "Staging compliance artifacts..." -ForegroundColor Cyan
+        try {
+            git add "plans/compliance" | Out-Null
+            $msg2 = "chore(reports): export compliance snapshot"
+            git commit -m $msg2 | Out-Null
+            if (-not $NoPush) {
+                git push | Out-Null
+                Write-Host "Compliance snapshot pushed." -ForegroundColor Green
+            } else {
+                Write-Host "Compliance snapshot push skipped (NoPush)." -ForegroundColor Yellow
+            }
+        } catch {
+            Write-Warning "Git commit/push (compliance) failed: $($_.Exception.Message)"
+        }
     } catch {
         Write-Warning "Compliance snapshot export failed: $($_.Exception.Message)"
     }
