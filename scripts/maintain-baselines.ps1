@@ -4,7 +4,8 @@ param(
         "plans/baseline-network.plan",
         "plans/tag-value-enforce.plan"
     ),
-    [switch]$NoPush
+    [switch]$NoPush,
+    [switch]$SkipComplianceSnapshot
 )
 
 $ErrorActionPreference = "Stop"
@@ -102,3 +103,17 @@ try {
 }
 
 Write-Host "Baseline maintenance complete." -ForegroundColor Green
+
+# 4) Export compliance snapshot (JSON + Markdown)
+if (-not $SkipComplianceSnapshot) {
+    try {
+        Write-Host "Exporting compliance snapshot..." -ForegroundColor Cyan
+        # Use pwsh to run exporter in the repo context
+        pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File "scripts/export-compliance-snapshot.ps1" | Out-Null
+        Write-Host "Compliance snapshot exported." -ForegroundColor Green
+    } catch {
+        Write-Warning "Compliance snapshot export failed: $($_.Exception.Message)"
+    }
+} else {
+    Write-Host "Compliance snapshot skipped (SkipComplianceSnapshot)." -ForegroundColor Yellow
+}
