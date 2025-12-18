@@ -1,5 +1,52 @@
 # 变更日志
 
+## 最近更新 [2025-12-18]
+
+### 🆕 能力增强（文档 + 脚本）
+
+#### 维护与合规快照流水线
+- **维护脚本增强**: `scripts/maintain-baselines.ps1`
+	- 默认基线计划新增 `plans/baseline-defender.plan`
+	- 维护末尾自动导出合规快照（JSON+Markdown）并 `git add/commit/push`
+	- 提供 `-SkipComplianceSnapshot` 参数跳过快照导出
+- **新增脚本**:
+	- `scripts/export-compliance-snapshot.ps1`（管理组/订阅合规快照导出）
+	- `scripts/setup-maintenance-schedule.ps1`（注册每日/每周计划任务，执行维护+快照）
+
+#### 文档更新
+- `README.md`、`README.zh-CN.md`、`usage.md`
+	- 默认基线列表新增 Defender 基线
+	- 增加合规快照导出与计划任务用法示例
+- `VALIDATION_SCRIPTS_GUIDE.md`
+	- 新增“第 2.6 步：基线与合规快照验证（摘要 + 报告归档）”
+	- 扩展“可用的验证工具”表，纳入维护、快照、计划任务脚本
+
+### 🗂️ 产物与基线
+- 新增并维护：`plans/baseline-defender.plan` 与 `plans/baseline-defender.changes.md`
+- 合规快照归档路径：`plans/compliance/compliance-<yyyy-MM-dd_HH-mm-ss>.json|.md`
+
+### ✅ 验证状态
+- ✅ 维护脚本执行：摘要刷新与快照导出均成功，变更已提交并推送
+- ✅ 文档引用与命令示例可用（README/usage/VALIDATION 指南）
+
+### 🚀 快速使用
+```powershell
+# 一键维护（刷新摘要 + 导出合规快照 + 自动提交/推送）
+pwsh scripts/maintain-baselines.ps1
+
+# 按需导出合规快照（产物保存至 plans/compliance）
+pwsh scripts/export-compliance-snapshot.ps1
+
+# 注册计划任务（每日/每周维护 + 快照）
+pwsh scripts/setup-maintenance-schedule.ps1 -CreateDaily
+pwsh scripts/setup-maintenance-schedule.ps1 -CreateWeekly -WeeklyDay Sunday -WeeklyTime 02:30
+```
+
+### 🔄 向后兼容性
+- ✅ 默认行为为自动维护与快照归档；可通过 `-SkipComplianceSnapshot` 跳过快照步骤
+
+---
+
 ## 最近更新 [2025-09-26]
 
 ### 🆕 新增功能
