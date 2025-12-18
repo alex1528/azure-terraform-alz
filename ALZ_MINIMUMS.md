@@ -17,11 +17,30 @@
   - 建议补充：按需启用混合连接（`az network vnet-gateway`：VPN/ExpressRoute）。当前未强制启用，脚本会给出提醒。
 
 ## 资源组织（命名与标签）
-- 建议：统一的命名与标签标准，并在平台/着陆区强制实施（Azure Policy）。
-- 本仓库映射：
   - 命名：统一前缀 `bingohr-` + 组件 + 区域 + 后缀（例如 `bingohr-connectivity-eastasia-rg`）。
   - 标签：为资源与资源组附加 `CostCenter`、`Environment`、`ManagedBy`、`Owner`、`Project` 等常用键。
-  - 建议补充：在管理组范围启用内置策略 “Require a tag and its value” 系列，保障强制合规。
+  - 现状（已实施）：在平台与着陆区管理组范围启用内置策略 “Require a tag and its value on resource groups”，强制 `Environment=BingoHR-ALZ` 标签。
+    - 平台管理组策略名：`core-tag-env`
+    - 着陆区管理组策略名：`lz-tag-env`
+  - 建议补充：可按需扩展到更多必需标签（如 `CostCenter`、`Owner`），并在工作负载落地前通过策略合规门控。
+
+### 验证强制标签策略
+使用计划文件或 Azure CLI 验证策略分配是否生效：
+
+```powershell
+# 直接应用已生成的策略启用计划
+terraform apply "plans/tag-policy-enable.plan"
+
+# 或使用 CLI 查看管理组范围的策略分配
+az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-platform" | ConvertFrom-Json | where displayName -match "Require a tag"
+az policy assignment list --scope "/providers/Microsoft.Management/managementGroups/bingohr-landingzones" | ConvertFrom-Json | where displayName -match "Require a tag"
+```
+
+### 策略豁免（Sandbox）示例
+出于研发/临时需求，可为着陆区中的特定策略创建到期豁免：
+- 资源：`azurerm_management_group_policy_exemption.sandbox_exemptions`（见 modules/core_policies/main.tf）
+- 启用方式：设置变量 `create_sandbox_exemptions = true` 并配置 `sandbox_exemption_expiry` 到期时间。
+- 范围：默认示例对 `deny_rdp_from_internet` 创建豁免。可按需扩展至其他策略（不建议对强制标签策略豁免）。
 
 ## 一键验证（Windows PowerShell）
 使用 Azure CLI 已登录的上下文，执行：
