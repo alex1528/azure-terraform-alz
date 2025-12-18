@@ -442,3 +442,19 @@ variable "defender_plans_nonprod" {
   type        = set(string)
   default     = []
 }
+
+# ============================================================================
+# IAM STANDARD USER (FOR VM LOGIN & READ ACCESS)
+# ============================================================================
+
+variable "iam_user_alias" {
+  description = "Alias (left part) for the standard user's UPN (e.g., 'stduser' => stduser@<default-domain>)"
+  type        = string
+  default     = "stduser"
+}
+
+variable "iam_user_display_name" {
+  description = "Display name for the standard user created in Entra ID"
+  type        = string
+  default     = "ALZ Standard User"
+}

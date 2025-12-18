@@ -265,3 +265,23 @@ output "workload_nonprod_private_ips" {
     mysql = module.workload_web_mysql_nonprod.mysql_private_ip
   }
 }
+
+# ============================================================================
+# IAM: STANDARD USER OUTPUTS
+# ============================================================================
+
+output "iam_user_upn" {
+  description = "UPN of the standard user created for VM login and Reader access"
+  value       = module.iam_standard_user.user_principal_name
+}
+
+output "iam_user_object_id" {
+  description = "Object ID of the standard user"
+  value       = module.iam_standard_user.user_object_id
+}
+
+output "iam_user_initial_password" {
+  description = "Initial password for the standard user (rotate after first login)."
+  value       = random_password.iam_user_initial.result
+  sensitive   = true
+}

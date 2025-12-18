@@ -18,6 +18,16 @@ provider "azurerm" {
 
 data "azurerm_client_config" "current" {}
 
+# Azure AD default domain lookup for building a user UPN like "<alias>@<default-domain>"
+data "azuread_domains" "current" {}
+
+# Generate a strong initial password (kept only in Terraform state, not in VCS)
+resource "random_password" "iam_user_initial" {
+  length           = 20
+  special          = true
+  override_special = "!@#$%^&*()-_=+[]{}"
+}
+
 # ============================================================================
 # AZURE LANDING ZONE MANAGEMENT GROUPS
 # ============================================================================
@@ -258,6 +268,55 @@ module "workload_web_mysql_nonprod" {
   db_name     = var.db_name
 
   depends_on = [module.connectivity]
+}
+
+# ============================================================================
+# IAM: STANDARD USER + RBAC (PROD & NONPROD)
+# ============================================================================
+
+locals {
+  # Use the first available domain object's domain_name attribute
+  default_domain = try(data.azuread_domains.current.domains[0].domain_name, null)
+}
+
+module "iam_standard_user" {
+  source = "./modules/iam_user_rbac"
+
+  user_principal_name  = "${var.iam_user_alias}@${local.default_domain}"
+  display_name         = var.iam_user_display_name
+  initial_password     = random_password.iam_user_initial.result
+  force_password_change = true
+
+  role_assignments = [
+    // Reader on both workload resource groups
+    {
+      scope                = module.workload_web_mysql_prod.resource_group_id
+      role_definition_name = "Reader"
+    },
+    {
+      scope                = module.workload_web_mysql_nonprod.resource_group_id
+      role_definition_name = "Reader"
+    },
+    // VM login rights (non-admin) on both web and mysql VMs across envs
+    {
+      scope                = module.workload_web_mysql_prod.web_vm_id
+      role_definition_name = "Virtual Machine User Login"
+    },
+    {
+      scope                = module.workload_web_mysql_prod.mysql_vm_id
+      role_definition_name = "Virtual Machine User Login"
+    },
+    {
+      scope                = module.workload_web_mysql_nonprod.web_vm_id
+      role_definition_name = "Virtual Machine User Login"
+    },
+    {
+      scope                = module.workload_web_mysql_nonprod.mysql_vm_id
+      role_definition_name = "Virtual Machine User Login"
+    }
+  ]
+
+  depends_on = [module.workload_web_mysql_prod, module.workload_web_mysql_nonprod]
 }
 
 # ============================================================================

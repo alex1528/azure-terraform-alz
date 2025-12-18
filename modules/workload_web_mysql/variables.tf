@@ -91,3 +91,9 @@ variable "db_name" {
   type        = string
   default     = "appdb"
 }
+
+variable "enable_aad_login" {
+  description = "Enable AAD Login VM extension on both VMs"
+  type        = bool
+  default     = false
+}

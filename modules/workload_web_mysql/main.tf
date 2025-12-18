@@ -410,3 +410,22 @@ resource "azurerm_linux_virtual_machine" "mysql" {
 
   custom_data = base64encode(local.mysql_cloud_init)
 }
+
+# Enable Azure AD Login on both VMs
+resource "azurerm_virtual_machine_extension" "web_aad_login" {
+  count               = var.enable_aad_login ? 1 : 0
+  name                 = "AADLoginForLinux"
+  virtual_machine_id   = azurerm_linux_virtual_machine.web.id
+  publisher            = "Microsoft.Azure.ActiveDirectory"
+  type                 = "AADLoginForLinux"
+  type_handler_version = "1.0"
+}
+
+resource "azurerm_virtual_machine_extension" "mysql_aad_login" {
+  count               = var.enable_aad_login ? 1 : 0
+  name                 = "AADLoginForLinux"
+  virtual_machine_id   = azurerm_linux_virtual_machine.mysql.id
+  publisher            = "Microsoft.Azure.ActiveDirectory"
+  type                 = "AADLoginForLinux"
+  type_handler_version = "1.0"
+}
