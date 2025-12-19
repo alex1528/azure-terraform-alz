@@ -34,8 +34,15 @@ $mgDecom = az account management-group show --name "$Prefix-decommissioned" -o j
 # Policy enforcement mode (from Terraform variable desired state)
 $policyMode = "Default"
 
-# Defender pricing
-$defenderPlans = az security pricing list -o json | ConvertFrom-Json | ForEach-Object { @{ type = $_.name; tier = $_.pricingTier } }
+# Defender pricing (handle schema differences across CLI versions)
+$defenderRaw = az security pricing list -o json 2>$null | ConvertFrom-Json
+$defenderPlans = @()
+foreach ($p in ($defenderRaw | ForEach-Object { $_ })) {
+  if ($null -eq $p) { continue }
+  $type = if ($p.name) { $p.name } elseif ($p.resourceType) { $p.resourceType } else { $null }
+  $tier = if ($p.pricingTier) { $p.pricingTier } elseif ($p.tier) { $p.tier } else { $null }
+  $defenderPlans += @{ type = $type; tier = $tier }
+}
 
 # Connectivity (Firewall & Bastion)
 $rgConn = "$Prefix-connectivity-$Region-rg"
