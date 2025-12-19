@@ -1,12 +1,4 @@
-output "spoke_route_table_id" {
-  description = "Route table ID to associate with spoke/workload subnets for egress via firewall"
-  value       = try(azurerm_route_table.spoke_routes[0].id, null)
-}
-
-output "hub_subnet_cidrs" {
-  description = "Map of hub subnet names to their first CIDR prefix"
-  value       = { for name, cfg in var.hub_subnets : name => cfg.address_prefixes[0] }
-}# modules/connectivity/outputs.tf - ALZ Connectivity Module Outputs
+# modules/connectivity/outputs.tf - ALZ Connectivity Module Outputs
 
 # ============================================================================
 # RESOURCE GROUP OUTPUTS

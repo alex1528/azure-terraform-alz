@@ -169,6 +169,66 @@ module "optional_resources" {
 }
 
 # ============================================================================
+# PRIVATE LINK DEMO: Platform Key Vault + Private Endpoint + Private DNS
+# ============================================================================
+
+resource "azurerm_key_vault" "platform_kv" {
+  name                        = lower(replace("${var.resource_prefix}platformkv", "-", ""))
+  location                    = var.location
+  resource_group_name         = module.optional_resources.resource_group_name
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  sku_name                    = "standard"
+  purge_protection_enabled    = true
+  soft_delete_retention_days  = 7
+  enabled_for_disk_encryption = true
+  enabled_for_deployment      = true
+  enabled_for_template_deployment = true
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+    key_permissions    = ["Get", "List", "Create", "Update"]
+    secret_permissions = ["Get", "List", "Set"]
+    certificate_permissions = ["Get", "List", "Create", "Update"]
+  }
+  tags = local.common_tags
+}
+
+resource "azurerm_private_dns_zone" "kv" {
+  name                = "privatelink.vaultcore.azure.net"
+  resource_group_name = module.optional_resources.resource_group_name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "kv_hub_link" {
+  name                  = "kv-hubvnet-link"
+  resource_group_name   = module.optional_resources.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.kv.name
+  virtual_network_id    = module.connectivity[0].hub_vnet_id
+  registration_enabled  = false
+}
+
+resource "azurerm_private_endpoint" "kv_pe" {
+  name                = "${var.resource_prefix}-kv-pe"
+  location            = var.location
+  resource_group_name = module.optional_resources.resource_group_name
+  subnet_id           = module.connectivity[0].hub_subnet_ids["snet-shared-services"]
+
+  private_service_connection {
+    name                           = "kv-priv-conn"
+    private_connection_resource_id = azurerm_key_vault.platform_kv.id
+    is_manual_connection           = false
+    subresource_names              = ["vault"]
+  }
+
+  private_dns_zone_group {
+    name                 = "kv-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.kv.id]
+  }
+
+  tags = local.common_tags
+}
+
+# ============================================================================
 # COMPUTE RESOURCES (VMs - OPTIONAL)
 # ============================================================================
 
