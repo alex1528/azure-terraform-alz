@@ -29,7 +29,16 @@ function Start-BastionTunnel([string]$bstName, [string]$rgConn, [string]$vmId, [
     '--resource-port', $resourcePort
   )
   $proc = Start-Process -FilePath 'az' -ArgumentList $args -NoNewWindow -PassThru
-  Start-Sleep -Seconds 4
+  # Wait for local port ready (up to ~12s)
+  $maxTries = 12
+  for ($i=0; $i -lt $maxTries; $i++) {
+    try {
+      $tcp = New-Object System.Net.Sockets.TcpClient
+      $tcp.Connect('127.0.0.1', $localPort)
+      if ($tcp.Connected) { $tcp.Close(); break }
+    } catch {}
+    Start-Sleep -Milliseconds 1000
+  }
   return $proc
 }
 
@@ -67,7 +76,12 @@ foreach ($t in $targets) {
   $proc = $null
   try {
     $proc = Start-BastionTunnel -bstName $bstName -rgConn $rgConn -vmId $vmId -localPort $t.port -resourcePort $ResourcePort
-    $res = Test-HttpLocal -localPort $t.port -path $Path -timeoutSec $TimeoutSec
+    # Retry HTTP probe few times to avoid transient startup delays
+    $res = $null
+    for ($i=0; $i -lt 3; $i++) {
+      $res = Test-HttpLocal -localPort $t.port -path $Path -timeoutSec $TimeoutSec
+      if ($res.ok) { break } else { Start-Sleep -Seconds 2 }
+    }
     if ($res.ok) {
       Write-Host ("PASS: HTTP via Bastion tunnel StatusCode={0} ContentLength={1}" -f $res.code, $res.length) -ForegroundColor Green
     } else {
