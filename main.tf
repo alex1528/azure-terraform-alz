@@ -326,6 +326,60 @@ module "iam_standard_user" {
 }
 
 # ============================================================================
+# IAM: PER-MANAGEMENT-GROUP PORTAL USERS + READER RBAC
+# - Creates one Entra ID user per ALZ management group and grants Reader at
+#   the corresponding management group scope so the user can sign in and
+#   browse resources in Azure Portal.
+# ============================================================================
+
+locals {
+  alz_group_scopes = {
+    decommissioned = module.management_groups.decommissioned_group_id
+    nonprod        = module.management_groups.non_prod_group_id
+    prod           = module.management_groups.prod_group_id
+    connectivity   = module.management_groups.connectivity_group_id
+    identity       = module.management_groups.identity_group_id
+    management     = module.management_groups.management_group_id
+    sandboxes      = module.management_groups.sandboxes_group_id
+  }
+
+  alz_group_users = {
+    for k, v in local.alz_group_scopes :
+    k => {
+      alias        = "${var.resource_prefix}-${k}-user"
+      display_name = "${var.resource_prefix} ${upper(k)} User"
+      scope_id     = v
+    }
+  }
+}
+
+resource "random_password" "alz_group_user_initial" {
+  for_each         = local.alz_group_users
+  length           = 20
+  special          = true
+  override_special = "!@#$%^&*()-_=+[]{}"
+}
+
+module "iam_group_users" {
+  for_each = local.alz_group_users
+  source   = "./modules/iam_user_rbac"
+
+  user_principal_name   = "${each.value.alias}@${local.default_domain}"
+  display_name          = each.value.display_name
+  initial_password      = random_password.alz_group_user_initial[each.key].result
+  force_password_change = true
+
+  role_assignments = [
+    {
+      scope                = each.value.scope_id
+      role_definition_name = "Reader"
+    }
+  ]
+
+  depends_on = [module.management_groups]
+}
+
+# ============================================================================
 # DIAGNOSTIC SETTINGS FOR VM MONITORING
 # ============================================================================
 
