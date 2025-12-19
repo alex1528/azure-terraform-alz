@@ -223,7 +223,7 @@ variable "deploy_core_policies" {
 variable "policy_enforcement_mode" {
   description = "Policy enforcement mode: 'DoNotEnforce' for audit mode, 'Default' for enforce mode"
   type        = string
-  default     = "DoNotEnforce"
+  default     = "Default"
   validation {
     condition     = contains(["DoNotEnforce", "Default"], var.policy_enforcement_mode)
     error_message = "Policy enforcement mode must be either 'DoNotEnforce' or 'Default'."
@@ -457,4 +457,42 @@ variable "iam_user_display_name" {
   description = "Display name for the standard user created in Entra ID"
   type        = string
   default     = "ALZ Standard User"
+}
+
+# ============================================================================
+# COST MANAGEMENT (BUDGETS)
+# ============================================================================
+
+variable "budget_amount_prod" {
+  description = "Monthly budget amount for Production workload resource group"
+  type        = number
+  default     = 150.0
+}
+
+variable "budget_amount_nonprod" {
+  description = "Monthly budget amount for Non-Production workload resource group"
+  type        = number
+  default     = 75.0
+}
+
+variable "budget_alert_emails" {
+  description = "Email recipients for budget alerts"
+  type        = list(string)
+  default     = []
+}
+
+# ============================================================================
+# SUBSCRIPTION VENDING (ASSOCIATIONS)
+# ============================================================================
+
+variable "prod_subscription_id" {
+  description = "Subscription ID to associate under the Production management group (optional)"
+  type        = string
+  default     = null
+}
+
+variable "nonprod_subscription_id" {
+  description = "Subscription ID to associate under the Non-Production management group (optional)"
+  type        = string
+  default     = null
 }

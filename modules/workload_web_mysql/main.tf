@@ -385,6 +385,7 @@ resource "azurerm_linux_virtual_machine" "web" {
   size                = var.vm_size
   admin_username      = var.admin_username
   disable_password_authentication = true
+  zone                = var.web_vm_zone
 
   identity {
     type = "SystemAssigned"
@@ -444,6 +445,7 @@ resource "azurerm_linux_virtual_machine" "mysql" {
   size                = var.vm_size
   admin_username      = var.admin_username
   disable_password_authentication = true
+  zone                = var.mysql_vm_zone
 
   identity {
     type = "SystemAssigned"

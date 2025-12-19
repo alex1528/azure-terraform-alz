@@ -234,6 +234,10 @@ module "workload_web_mysql_prod" {
   # Enable AAD login extensions on VMs
   enable_aad_login = true
 
+  # Availability Zones for DR posture
+  web_vm_zone   = "1"
+  mysql_vm_zone = "2"
+
   # Database
   db_username = var.db_username
   db_password = var.db_password
@@ -267,6 +271,10 @@ module "workload_web_mysql_nonprod" {
 
   # Enable AAD login extensions on VMs
   enable_aad_login = true
+
+  # Availability Zones for DR posture
+  web_vm_zone   = "2"
+  mysql_vm_zone = "3"
 
   # Database
   db_username = var.db_username
@@ -377,6 +385,61 @@ module "iam_group_users" {
   ]
 
   depends_on = [module.management_groups]
+}
+
+# ============================================================================
+# COST MANAGEMENT: BUDGETS FOR WORKLOAD RESOURCE GROUPS
+# ============================================================================
+
+resource "azurerm_consumption_budget_resource_group" "prod_budget" {
+  name                = "${var.resource_prefix}-prod-rg-budget"
+  resource_group_id   = module.workload_web_mysql_prod.resource_group_id
+  amount              = var.budget_amount_prod
+  time_grain          = "Monthly"
+  time_period {
+    start_date = timestamp()
+  }
+
+  notification {
+    enabled         = true
+    threshold       = 80
+    operator        = "GreaterThan"
+    contact_emails  = var.budget_alert_emails
+  }
+}
+
+resource "azurerm_consumption_budget_resource_group" "nonprod_budget" {
+  name                = "${var.resource_prefix}-nonprod-rg-budget"
+  resource_group_id   = module.workload_web_mysql_nonprod.resource_group_id
+  amount              = var.budget_amount_nonprod
+  time_grain          = "Monthly"
+  time_period {
+    start_date = timestamp()
+  }
+
+  notification {
+    enabled         = true
+    threshold       = 80
+    operator        = "GreaterThan"
+    contact_emails  = var.budget_alert_emails
+  }
+}
+
+# ============================================================================
+# SUBSCRIPTION VENDING: STANDARDIZED MG ASSOCIATION (OPTIONAL)
+# - When subscription IDs are provided, automatically associate them to ALZ MGs
+# ============================================================================
+
+resource "azurerm_management_group_subscription_association" "assoc_prod" {
+  count               = var.prod_subscription_id == null ? 0 : 1
+  management_group_id = module.management_groups.prod_group_id
+  subscription_id     = var.prod_subscription_id
+}
+
+resource "azurerm_management_group_subscription_association" "assoc_nonprod" {
+  count               = var.nonprod_subscription_id == null ? 0 : 1
+  management_group_id = module.management_groups.non_prod_group_id
+  subscription_id     = var.nonprod_subscription_id
 }
 
 # ============================================================================

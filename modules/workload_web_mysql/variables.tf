@@ -97,3 +97,15 @@ variable "enable_aad_login" {
   type        = bool
   default     = false
 }
+
+variable "web_vm_zone" {
+  description = "Availability Zone for the Web VM (e.g., '1', '2', '3'). Leave null for no specific zone."
+  type        = string
+  default     = null
+}
+
+variable "mysql_vm_zone" {
+  description = "Availability Zone for the MySQL VM (e.g., '1', '2', '3'). Leave null for no specific zone."
+  type        = string
+  default     = null
+}
