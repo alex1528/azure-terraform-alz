@@ -44,7 +44,7 @@ $targets = @(
 $allOk = $true
 
 foreach ($t in $targets) {
-  Write-Host "\n[${t.env}] Resolving public IP for $($t.vm) in RG $($t.rg)" -ForegroundColor Cyan
+  Write-Host ("\n[{0}] Resolving public IP for {1} in RG {2}" -f $t.env, $t.vm, $t.rg) -ForegroundColor Cyan
   $ip = Get-WebPublicIp -rg $t.rg -vmName $t.vm
   if (-not $ip) {
     Write-Host "WARN: 未发现公共 IP，跳过 HTTP 连通性测试" -ForegroundColor Yellow

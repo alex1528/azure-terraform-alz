@@ -43,3 +43,18 @@ pwsh scripts/verify-web-connectivity.ps1 -Prefix "bingohr" -Region "eastasia" -T
 ```
 
 返回码：`0`（全部通过）/ `1`（存在失败或跳过项）
+
+## verify-web-connectivity-bastion.ps1
+
+基于 Bastion Tunnel 的内网 HTTP 探测脚本：
+- 为 prod/nonprod web VM 分别建立本地端口到远端端口的隧道（默认本地 8081/8082 → 远端 80）
+- 通过 `http://127.0.0.1:<localPort>/` 探测应用连通性
+- 探测结束后自动关闭隧道进程
+
+### 用法
+
+```powershell
+pwsh scripts/verify-web-connectivity-bastion.ps1 -Prefix "bingohr" -Region "eastasia" -ProdLocalPort 8081 -NonprodLocalPort 8082 -ResourcePort 80 -Path "/"
+```
+
+注意：运行前需确保 Azure CLI 已登录且 Bastion 为 Standard SKU；首次使用可能会触发设备登录或浏览器认证。
