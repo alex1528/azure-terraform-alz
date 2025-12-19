@@ -37,10 +37,16 @@ $policyMode = "Default"
 # Defender pricing (handle schema differences across CLI versions)
 $defenderRaw = az security pricing list -o json 2>$null | ConvertFrom-Json
 $defenderPlans = @()
-foreach ($p in ($defenderRaw | ForEach-Object { $_ })) {
+$defenderItems = @()
+if ($defenderRaw -is [System.Array]) { $defenderItems = $defenderRaw }
+elseif ($defenderRaw -and $defenderRaw.value) { $defenderItems = $defenderRaw.value }
+elseif ($defenderRaw) { $defenderItems = @($defenderRaw) }
+foreach ($p in $defenderItems) {
   if ($null -eq $p) { continue }
-  $type = if ($p.name) { $p.name } elseif ($p.resourceType) { $p.resourceType } else { $null }
-  $tier = if ($p.pricingTier) { $p.pricingTier } elseif ($p.tier) { $p.tier } else { $null }
+  $type = ($p | Select-Object -ExpandProperty name -ErrorAction SilentlyContinue)
+  if (-not $type) { $type = ($p | Select-Object -ExpandProperty resourceType -ErrorAction SilentlyContinue) }
+  $tier = ($p | Select-Object -ExpandProperty pricingTier -ErrorAction SilentlyContinue)
+  if (-not $tier) { $tier = ($p | Select-Object -ExpandProperty tier -ErrorAction SilentlyContinue) }
   $defenderPlans += @{ type = $type; tier = $tier }
 }
 
