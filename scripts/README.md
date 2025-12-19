@@ -9,7 +9,7 @@ Validates that:
 - NSG SSH rules allow from Bastion subnet CIDR and Azure platform IP `168.63.129.16`
 - An explicit `Deny` rule exists for SSH from `Internet`
 
-### Usage
+### validate-bastion-aad-login.ps1 用法
 
 ```powershell
 pwsh scripts/validate-bastion-aad-login.ps1 -Prefix "bingohr" -Region "eastasia" -BastionCidr "10.100.2.0/26"
@@ -17,7 +17,7 @@ pwsh scripts/validate-bastion-aad-login.ps1 -Prefix "bingohr" -Region "eastasia"
 
 Exit code is `0` on PASS, `1` on FAIL.
 
-### Portal Verification (Bastion AAD)
+### 门户验证（Bastion AAD）
 
 For each VM (prod/nonprod web + mysql):
 1. Azure Portal → Virtual machines → select VM
@@ -28,3 +28,18 @@ For each VM (prod/nonprod web + mysql):
 6. Confirm successful login prompt on the Bastion session
 
 If login fails, re-run the validation script and check extension status and NSG rules.
+
+## verify-web-connectivity.ps1
+
+验证 Web 应用的 HTTP 连通性：
+- 自动解析 `prod` 与 `nonprod` 的 web VM 公网 IP
+- 对目标 `http://<ip>/` 发起请求并输出状态码与内容长度
+- 无公网 IP 时给出警告并返回失败码，提示通过 Bastion Tunnel 或负载均衡健康探针方式再测
+
+### 用法
+
+```powershell
+pwsh scripts/verify-web-connectivity.ps1 -Prefix "bingohr" -Region "eastasia" -TimeoutSec 15 -Path "/"
+```
+
+返回码：`0`（全部通过）/ `1`（存在失败或跳过项）
