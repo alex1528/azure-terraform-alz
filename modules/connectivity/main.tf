@@ -210,6 +210,7 @@ resource "azurerm_bastion_host" "main" {
   location            = azurerm_resource_group.connectivity.location
   resource_group_name = azurerm_resource_group.connectivity.name
   sku                 = "Standard"
+  tunneling_enabled   = true
   tags                = var.tags
 
   ip_configuration {
