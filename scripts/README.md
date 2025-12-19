@@ -58,3 +58,15 @@ pwsh scripts/verify-web-connectivity-bastion.ps1 -Prefix "bingohr" -Region "east
 ```
 
 注意：运行前需确保 Azure CLI 已登录且 Bastion 为 Standard SKU；首次使用可能会触发设备登录或浏览器认证。
+
+## generate-compliance-snapshot.ps1
+
+生成 ALZ 合规快照（管理组结构、策略模式、Defender 定价、Firewall/Bastion、RSV 备份、预算、Key Vault Private Link 与私有 DNS 等）：
+
+### 用法
+
+```powershell
+pwsh scripts/generate-compliance-snapshot.ps1 -Prefix "bingohr" -Region "eastasia" -OutFile "compliance-snapshot.json"
+```
+
+脚本将输出 JSON 快照文件，可用于归档或审计对比。

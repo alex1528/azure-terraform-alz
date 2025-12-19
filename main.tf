@@ -228,6 +228,25 @@ resource "azurerm_private_endpoint" "kv_pe" {
   tags = local.common_tags
 }
 
+# Link Private DNS zone to workload VNets for name resolution in spokes
+resource "azurerm_private_dns_zone_virtual_network_link" "kv_prod_link" {
+  name                  = "kv-prodvnet-link"
+  resource_group_name   = module.optional_resources.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.kv.name
+  virtual_network_id    = module.workload_web_mysql_prod.vnet_id
+  registration_enabled  = false
+  depends_on            = [azurerm_private_endpoint.kv_pe]
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "kv_nonprod_link" {
+  name                  = "kv-nonprodvnet-link"
+  resource_group_name   = module.optional_resources.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.kv.name
+  virtual_network_id    = module.workload_web_mysql_nonprod.vnet_id
+  registration_enabled  = false
+  depends_on            = [azurerm_private_endpoint.kv_pe]
+}
+
 # ============================================================================
 # COMPUTE RESOURCES (VMs - OPTIONAL)
 # ============================================================================
