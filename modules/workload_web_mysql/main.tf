@@ -493,3 +493,47 @@ resource "azurerm_virtual_machine_extension" "mysql_aad_login" {
   type_handler_version = "1.0"
   tags = merge(var.tags, { AADForce = "2025-12-18-1" })
 }
+
+# ============================================================================
+# BACKUP & DISASTER RECOVERY (Recovery Services Vault + VM Backup)
+# ============================================================================
+
+resource "azurerm_recovery_services_vault" "vault" {
+  name                = "${var.resource_prefix}-${var.env}-rsv"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "Standard"
+  soft_delete_enabled = true
+  storage_mode_type   = "GeoRedundant"
+  tags                = var.tags
+}
+
+resource "azurerm_backup_policy_vm" "daily" {
+  name                = "${var.resource_prefix}-${var.env}-vm-daily"
+  resource_group_name = azurerm_resource_group.rg.name
+  recovery_vault_name = azurerm_recovery_services_vault.vault.name
+  timezone            = "China Standard Time"
+
+  backup {
+    frequency = "Daily"
+    time      = "23:00"
+  }
+
+  retention_daily {
+    count = 30
+  }
+}
+
+resource "azurerm_backup_protected_vm" "web" {
+  resource_group_name = azurerm_resource_group.rg.name
+  recovery_vault_name = azurerm_recovery_services_vault.vault.name
+  source_vm_id        = azurerm_linux_virtual_machine.web.id
+  backup_policy_id    = azurerm_backup_policy_vm.daily.id
+}
+
+resource "azurerm_backup_protected_vm" "mysql" {
+  resource_group_name = azurerm_resource_group.rg.name
+  recovery_vault_name = azurerm_recovery_services_vault.vault.name
+  source_vm_id        = azurerm_linux_virtual_machine.mysql.id
+  backup_policy_id    = azurerm_backup_policy_vm.daily.id
+}
