@@ -60,7 +60,14 @@ foreach ($env in $envs) {
 
         # Extension check
         $exts = az vm extension list -g $rg --vm-name $vmName -o json | ConvertFrom-Json
-        $aadExt = $exts | Where-Object { $_.name -eq 'AADLoginForLinux' -and $_.type -eq 'AADSSHLoginForLinux' -and $_.publisher -eq 'Microsoft.Azure.ActiveDirectory' }
+        $aadExt = $exts | Where-Object {
+            $_.name -eq 'AADLoginForLinux' -and
+            (
+                $_.typePropertiesType -eq 'AADSSHLoginForLinux' -or
+                ($_.type -match 'AADSSHLoginForLinux')
+            ) -and
+            $_.publisher -eq 'Microsoft.Azure.ActiveDirectory'
+        }
         $hasAAD = [bool]$aadExt
         if (-not $hasAAD) { $allPass = $false }
         $aadDetail = if ($hasAAD) { "version=$($aadExt.typeHandlerVersion)" } else { 'not found' }
@@ -86,8 +93,13 @@ foreach ($env in $envs) {
         $allowAzureDetail = if ($hasAllowAzureIP) { "rule=$($allowAzureIP.name)" } else { 'missing' }
         Write-Result $scope 'Allow SSH from 168.63.129.16' $hasAllowAzureIP $allowAzureDetail
 
-        # Allow SSH from Bastion subnet CIDR
-        $allowBastion = $rules | Where-Object { $_.direction -eq 'Inbound' -and $_.access -eq 'Allow' -and $_.destinationPortRange -eq '22' -and $_.sourceAddressPrefix -eq $bastionPrefix }
+        # Allow SSH from Bastion subnet CIDR (handle both Prefix and Prefixes)
+        $allowBastion = $rules | Where-Object {
+            $_.direction -eq 'Inbound' -and $_.access -eq 'Allow' -and $_.destinationPortRange -eq '22' -and (
+                $_.sourceAddressPrefix -eq $bastionPrefix -or
+                ($_.sourceAddressPrefixes -and ($_.sourceAddressPrefixes -contains $bastionPrefix))
+            )
+        }
         $hasAllowBastion = [bool]$allowBastion
         if (-not $hasAllowBastion) { $allPass = $false }
         $allowBastionDetail = if ($hasAllowBastion) { "rule=$($allowBastion.name)" } else { 'missing' }

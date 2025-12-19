@@ -81,7 +81,7 @@ resource "azurerm_network_security_group" "web_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "*"
+    source_address_prefix      = "Internet"
     destination_address_prefix = "*"
   }
 
@@ -164,7 +164,7 @@ resource "azurerm_network_security_group" "mysql_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "*"
+    source_address_prefix      = "Internet"
     destination_address_prefix = "*"
   }
 }
@@ -479,6 +479,7 @@ resource "azurerm_virtual_machine_extension" "web_aad_login" {
   publisher            = "Microsoft.Azure.ActiveDirectory"
   type                 = "AADSSHLoginForLinux"
   type_handler_version = "1.0"
+  tags = merge(var.tags, { AADForce = "2025-12-18-1" })
 }
 
 resource "azurerm_virtual_machine_extension" "mysql_aad_login" {
@@ -488,4 +489,5 @@ resource "azurerm_virtual_machine_extension" "mysql_aad_login" {
   publisher            = "Microsoft.Azure.ActiveDirectory"
   type                 = "AADSSHLoginForLinux"
   type_handler_version = "1.0"
+  tags = merge(var.tags, { AADForce = "2025-12-18-1" })
 }

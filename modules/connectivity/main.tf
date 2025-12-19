@@ -209,6 +209,7 @@ resource "azurerm_bastion_host" "main" {
   name                = "${var.hub_vnet_name}-bastion"
   location            = azurerm_resource_group.connectivity.location
   resource_group_name = azurerm_resource_group.connectivity.name
+  sku                 = "Standard"
   tags                = var.tags
 
   ip_configuration {
