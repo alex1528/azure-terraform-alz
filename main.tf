@@ -230,6 +230,7 @@ module "workload_web_mysql_prod" {
   existing_subnet_id = ""
   assign_public_ip   = true
   bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
+  spoke_route_table_id = try(module.connectivity[0].spoke_route_table_id, "")
 
   # Enable AAD login extensions on VMs
   enable_aad_login = true
@@ -268,6 +269,7 @@ module "workload_web_mysql_nonprod" {
   existing_subnet_id = ""
   assign_public_ip   = true
   bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
+  spoke_route_table_id = try(module.connectivity[0].spoke_route_table_id, "")
 
   # Enable AAD login extensions on VMs
   enable_aad_login = true

@@ -109,3 +109,9 @@ variable "mysql_vm_zone" {
   type        = string
   default     = null
 }
+
+variable "spoke_route_table_id" {
+  description = "Optional route table ID to associate with the workload subnet to force egress through the hub firewall"
+  type        = string
+  default     = ""
+}

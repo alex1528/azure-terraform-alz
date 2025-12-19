@@ -42,6 +42,13 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = ["10.11.1.0/24"]
 }
 
+# Associate route table to workload subnet to force egress via hub firewall (if provided)
+resource "azurerm_subnet_route_table_association" "subnet_rt" {
+  count                  = var.create_vnet && var.spoke_route_table_id != "" ? 1 : 0
+  subnet_id              = azurerm_subnet.subnet[0].id
+  route_table_id         = var.spoke_route_table_id
+}
+
 # NSGs
 resource "azurerm_network_security_group" "web_nsg" {
   name                = "${var.resource_prefix}-${var.env}-web-nsg"
