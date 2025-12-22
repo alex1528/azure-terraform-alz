@@ -29,6 +29,11 @@
   ```
 - 期望：出现登录提示并能进入 shell；若失败查看“故障排查”。
 
+提示（RBAC 要求）：
+- 若需在 VM 内使用 `sudo`，请确保为登录用户在目标 VM 资源范围分配 `Virtual Machine Administrator Login` 角色。
+- 可参考角色指南：[AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md) / [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)；以及 README 便笺：[README.zh-CN.md#vm-login-role-note-zh](README.zh-CN.md#vm-login-role-note-zh) / [README.md#vm-login-role-note](README.md#vm-login-role-note)。
+- 快速校验：登录后执行 `sudo -l` 与 `sudo whoami`（期望 `root`）。
+
 ## 二、VM 扩展健康
 检查 AADLoginForLinux 扩展状态（应为 `Succeeded`）：
 ```powershell
