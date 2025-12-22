@@ -7,6 +7,7 @@
 ## 🔗 快速链接
 - RBAC 角色指南（中文）: [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
 - RBAC Roles Guide (English): [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
+- VM 登录角色便笺： [直达](README.zh-CN.md#vm-login-role-note-zh)
 
 ## 提供的能力
 - 管理组层级：完整的 ALZ 管理组结构

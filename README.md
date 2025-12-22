@@ -7,6 +7,7 @@
 ## 🔗 Quick Links
 - RBAC Roles Guide (English): [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
 - RBAC 角色指南（中文）: [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
+- VM login role note: [Admin vs User](README.md#vm-login-role-note)
 
 ## 🎯 **What This Implementation Provides**
 
