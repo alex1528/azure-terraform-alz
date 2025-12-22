@@ -322,6 +322,10 @@ First login will force password change; re-run the check script to confirm.
 
 This implementation assigns practical Azure RBAC permissions for each group to balance least-privilege with day-to-day usability. Baseline management group Reader remains in place.
 
+For a complete catalog of roles, scopes, CLI examples, and verification guidance, see the role guides:
+- [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
+- [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
+
 - Non-Production group (nonprod): `Contributor` on the Non-Prod workload resource group; `Virtual Machine Administrator Login` on nonprod VMs.
 - Production group (prod): `Contributor` on the Prod workload resource group; `Virtual Machine Administrator Login` on prod VMs.
 - Connectivity group: `Reader` on the connectivity resource group.

@@ -364,6 +364,10 @@ terraform apply tfplan_upn_override
 
 本实现为各组用户配置了实用的 Azure RBAC 权限，既保证最小权限原则，又满足日常运维需求。具体如下（均在管理组范围保留基础 Reader 能力）：
 
+如需查看完整的角色清单、作用范围、CLI 示例与验证指引，请参阅以下指南：
+- [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
+- [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
+
 - 非生产组（nonprod）：在“非生产工作负载”资源组授予 `Contributor`；对应非生产 VM 上授予 `Virtual Machine Administrator Login`。
 - 生产组（prod）：在“生产工作负载”资源组授予 `Contributor`；对应生产 VM 上授予 `Virtual Machine Administrator Login`。
 - 连接性组（connectivity）：在“连接性”资源组授予 `Reader`。
