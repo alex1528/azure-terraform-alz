@@ -451,9 +451,9 @@ locals {
   default_verified_candidates = [for d in local.tenant_domains : d.domain_name if try(d.is_default, false) && try(d.is_verified, false)]
   verified_non_initial        = [for d in local.tenant_domains : d.domain_name if try(d.is_verified, false) && !try(d.is_initial, false)]
   # Prefer a verified custom domain that matches org_name hint
-  org_name_lc                 = lower(var.org_name)
-  verified_match_org          = [for d in local.tenant_domains : d.domain_name if try(d.is_verified, false) && !try(d.is_initial, false) && contains(lower(d.domain_name), local.org_name_lc)]
-  initial_domain_candidates   = [for d in local.tenant_domains : d.domain_name if try(d.is_initial, false)]
+  org_name_lc               = lower(var.org_name)
+  verified_match_org        = [for d in local.tenant_domains : d.domain_name if try(d.is_verified, false) && !try(d.is_initial, false) && contains(lower(d.domain_name), local.org_name_lc)]
+  initial_domain_candidates = [for d in local.tenant_domains : d.domain_name if try(d.is_initial, false)]
 
   # Prefer a verified custom domain that exactly matches the Owner tag's email domain, if provided
   owner_tag_value             = try(var.tags["Owner"], "")
@@ -543,6 +543,74 @@ locals {
       scope_id     = v
     }
   }
+
+  # Extra RBAC per management group to ensure practical access to resources
+  # - nonprod/prod: Reader on workload RGs + VM login on web/mysql VMs
+  # - others: keep inherited Reader at MG scope
+  alz_group_extra_rbac = {
+    nonprod = [
+      {
+        scope                = module.workload_web_mysql_nonprod.resource_group_id
+        role_definition_name = "Contributor"
+      },
+      {
+        scope                = module.workload_web_mysql_nonprod.web_vm_id
+        role_definition_name = "Virtual Machine User Login"
+      },
+      {
+        scope                = module.workload_web_mysql_nonprod.mysql_vm_id
+        role_definition_name = "Virtual Machine User Login"
+      }
+    ]
+    prod = [
+      {
+        scope                = module.workload_web_mysql_prod.resource_group_id
+        role_definition_name = "Contributor"
+      },
+      {
+        scope                = module.workload_web_mysql_prod.web_vm_id
+        role_definition_name = "Virtual Machine User Login"
+      },
+      {
+        scope                = module.workload_web_mysql_prod.mysql_vm_id
+        role_definition_name = "Virtual Machine User Login"
+      }
+    ]
+    connectivity = [
+      {
+        scope                = module.connectivity[0].connectivity_resource_group_id
+        role_definition_name = "Reader"
+      }
+    ]
+    identity = [
+      {
+        scope                = module.optional_resources.resource_group_id
+        role_definition_name = "Reader"
+      }
+    ]
+    management = [
+      {
+        scope                = module.optional_resources.resource_group_id
+        role_definition_name = "Reader"
+      }
+    ]
+    sandboxes = [
+      {
+        scope                = module.workload_web_mysql_prod.resource_group_id
+        role_definition_name = "Reader"
+      },
+      {
+        scope                = module.workload_web_mysql_nonprod.resource_group_id
+        role_definition_name = "Reader"
+      }
+    ]
+    decommissioned = [
+      {
+        scope                = module.optional_resources.resource_group_id
+        role_definition_name = "Reader"
+      }
+    ]
+  }
 }
 
 resource "random_password" "alz_group_user_initial" {
@@ -561,12 +629,15 @@ module "iam_group_users" {
   initial_password      = random_password.alz_group_user_initial[each.key].result
   force_password_change = true
 
-  role_assignments = [
-    {
-      scope                = each.value.scope_id
-      role_definition_name = "Reader"
-    }
-  ]
+  role_assignments = concat(
+    [
+      {
+        scope                = each.value.scope_id
+        role_definition_name = "Reader"
+      }
+    ],
+    lookup(local.alz_group_extra_rbac, each.key, [])
+  )
 
   depends_on = [module.management_groups]
 }

@@ -281,3 +281,39 @@ terraform apply tfplan_upn_override
 ---
 
 **结论**: 使用 `./validate-alz-features.sh` 来获得最全面的功能验证！ 🎉
+
+---
+
+## 🧑‍🤝‍🧑 RBAC 验证步骤（组用户）
+
+本实现为不同组的用户分配了针对性的 Azure RBAC：
+- nonprod/prod 组：对应环境工作负载 RG → `Contributor`；对应 VM → `Virtual Machine User Login`
+- connectivity：连接性 RG → `Reader`
+- management/identity/decommissioned：可选/管理资源 RG → `Reader`
+- sandboxes：生产与非生产工作负载 RG → `Reader`
+
+参考实现：见 [main.tf](main.tf) 中 `local.alz_group_extra_rbac`；用户与域诊断输出见 [outputs.tf](outputs.tf)。
+
+### 使用 Azure Portal 验证
+- 进入目标资源组 → 访问控制 (IAM) → 角色分配 → 按用户或角色筛选。
+
+### 使用 Azure CLI 验证
+```powershell
+$upn  = "bingohr-nonprod-user@gdjiuyun.onmicrosoft.com"  # 替换为实际组用户 UPN
+$rg   = "<your-nonprod-workload-rg>"                    # 例如：bingohr-nonprod-rg
+$vm   = "<your-nonprod-vm-name>"                        # 例如：bingohr-nonprod-web
+
+$oid  = az ad user show --id $upn --query id -o tsv
+$rgId = az group show -n $rg --query id -o tsv
+$vmId = az vm show -g $rg -n $vm --query id -o tsv
+
+# 资源组范围（应为 Reader 或 Contributor）
+az role assignment list --assignee $oid --scope $rgId -o table
+
+# VM 范围（应为 Virtual Machine User Login）
+az role assignment list --assignee $oid --scope $vmId -o table
+```
+
+期望：
+- 非生产/生产组用户在对应 RG 显示 `Contributor`，在 VM 上显示 `Virtual Machine User Login`；
+- 其他各组在相应 RG 显示 `Reader`。
