@@ -376,7 +376,8 @@ terraform apply tfplan_upn_override
 - [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
 - [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
 
-便笺：VM 登录角色差异
+<a id="vm-login-role-note-zh"></a>
+### 便笺：VM 登录角色差异
 - `Virtual Machine Administrator Login`：支持通过 AAD SSH 登录并具备管理员权限，可执行 `sudo`。
 - `Virtual Machine User Login`：不具备管理员权限，无法执行 `sudo`。
 - 本实现在生产/非生产 VM 范围统一使用“管理员登录”角色以支持 `sudo`。登录后可用 `sudo -l` 与 `sudo whoami`（期望 `root`）进行快速验证。
@@ -393,6 +394,7 @@ terraform apply tfplan_upn_override
 
 ### 验证步骤（Azure Portal）
 - 进入目标资源组 → 访问控制 (IAM) → 角色分配 → 按用户或角色筛选，确认是否存在上表对应的 `Reader`/`Contributor`/`Virtual Machine Administrator Login`。
+- 参见 VM 登录角色差异便笺：[链接](README.zh-CN.md#vm-login-role-note-zh)
 
 ### 验证步骤（Azure CLI）
 使用示例变量（请替换为实际 UPN、资源组与 VM 名称）：

@@ -330,7 +330,8 @@ For a complete catalog of roles, scopes, CLI examples, and verification guidance
 - [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
 - [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
 
-Quick note: VM login role differences
+<a id="vm-login-role-note"></a>
+### Quick note: VM login role differences
 - `Virtual Machine Administrator Login` grants AAD SSH with admin privileges and supports `sudo`.
 - `Virtual Machine User Login` does not grant admin privileges and cannot `sudo`.
 - This implementation uses Administrator Login on prod/nonprod VM scopes to enable `sudo`. After AAD SSH, run `sudo -l` and `sudo whoami` (expect `root`).
@@ -549,6 +550,7 @@ This implementation uses **Azure Storage** for Terraform state management with t
 - **🔒 Secure State Storage** - State files stored in Azure Storage with encryption
 - **👥 Team Collaboration** - Shared state access for multiple team members
 - **🔐 Access Control** - Azure RBAC and Azure AD authentication
+  - See VM login role differences: [note](README.md#vm-login-role-note)
 - **📋 State Locking** - Automatic state locking to prevent concurrent modifications
 - **🔄 Versioning** - State file versioning and backup capabilities
 
