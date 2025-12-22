@@ -330,6 +330,11 @@ For a complete catalog of roles, scopes, CLI examples, and verification guidance
 - [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
 - [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
 
+Quick note: VM login role differences
+- `Virtual Machine Administrator Login` grants AAD SSH with admin privileges and supports `sudo`.
+- `Virtual Machine User Login` does not grant admin privileges and cannot `sudo`.
+- This implementation uses Administrator Login on prod/nonprod VM scopes to enable `sudo`. After AAD SSH, run `sudo -l` and `sudo whoami` (expect `root`).
+
 - Non-Production group (nonprod): `Contributor` on the Non-Prod workload resource group; `Virtual Machine Administrator Login` on nonprod VMs.
 - Production group (prod): `Contributor` on the Prod workload resource group; `Virtual Machine Administrator Login` on prod VMs.
 - Connectivity group: `Reader` on the connectivity resource group.

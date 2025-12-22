@@ -376,6 +376,11 @@ terraform apply tfplan_upn_override
 - [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
 - [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
 
+便笺：VM 登录角色差异
+- `Virtual Machine Administrator Login`：支持通过 AAD SSH 登录并具备管理员权限，可执行 `sudo`。
+- `Virtual Machine User Login`：不具备管理员权限，无法执行 `sudo`。
+- 本实现在生产/非生产 VM 范围统一使用“管理员登录”角色以支持 `sudo`。登录后可用 `sudo -l` 与 `sudo whoami`（期望 `root`）进行快速验证。
+
 - 非生产组（nonprod）：在“非生产工作负载”资源组授予 `Contributor`；对应非生产 VM 上授予 `Virtual Machine Administrator Login`。
 - 生产组（prod）：在“生产工作负载”资源组授予 `Contributor`；对应生产 VM 上授予 `Virtual Machine Administrator Login`。
 - 连接性组（connectivity）：在“连接性”资源组授予 `Reader`。
