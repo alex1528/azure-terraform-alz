@@ -364,8 +364,8 @@ terraform apply tfplan_upn_override
 
 本实现为各组用户配置了实用的 Azure RBAC 权限，既保证最小权限原则，又满足日常运维需求。具体如下（均在管理组范围保留基础 Reader 能力）：
 
-- 非生产组（nonprod）：在“非生产工作负载”资源组授予 `Contributor`；对应非生产 VM 上授予 `Virtual Machine User Login`。
-- 生产组（prod）：在“生产工作负载”资源组授予 `Contributor`；对应生产 VM 上授予 `Virtual Machine User Login`。
+- 非生产组（nonprod）：在“非生产工作负载”资源组授予 `Contributor`；对应非生产 VM 上授予 `Virtual Machine Administrator Login`。
+- 生产组（prod）：在“生产工作负载”资源组授予 `Contributor`；对应生产 VM 上授予 `Virtual Machine Administrator Login`。
 - 连接性组（connectivity）：在“连接性”资源组授予 `Reader`。
 - 管理组（management）：在“可选资源/管理资源”资源组授予 `Reader`。
 - 身份组（identity）：在“可选资源/管理资源”资源组授予 `Reader`。
@@ -375,7 +375,7 @@ terraform apply tfplan_upn_override
 实现位置：见 [main.tf](main.tf) 中 `local.alz_group_extra_rbac` 与相关 `module "iam_group_users"` 配置；调试输出参见 [outputs.tf](outputs.tf) 中 `alz_group_user_upns`、`resolved_upn_domain` 等。
 
 ### 验证步骤（Azure Portal）
-- 进入目标资源组 → 访问控制 (IAM) → 角色分配 → 按用户或角色筛选，确认是否存在上表对应的 `Reader`/`Contributor`/`Virtual Machine User Login`。
+- 进入目标资源组 → 访问控制 (IAM) → 角色分配 → 按用户或角色筛选，确认是否存在上表对应的 `Reader`/`Contributor`/`Virtual Machine Administrator Login`。
 
 ### 验证步骤（Azure CLI）
 使用示例变量（请替换为实际 UPN、资源组与 VM 名称）：
@@ -392,13 +392,17 @@ $vmId  = az vm show -g $rg -n $vm --query id -o tsv
 # 资源组范围的角色（Reader 或 Contributor）
 az role assignment list --assignee $oid --scope $rgId -o table
 
-# VM 范围的登录角色（Virtual Machine User Login）
+# VM 范围的登录角色（Virtual Machine Administrator Login）
 az role assignment list --assignee $oid --scope $vmId -o table
 ```
 
 结果应能看到：
 - 非生产/生产组用户在对应工作负载 RG 拥有 `Contributor`。
-- 非生产/生产组用户在对应 VM 上拥有 `Virtual Machine User Login`。
+- 非生产/生产组用户在对应 VM 上拥有 `Virtual Machine Administrator Login`。
+
+注意：在通过 AAD SSH 登录到 VM 后，使用 `sudo` 需要 `Virtual Machine Administrator Login` 角色。快速验证：
+- 使用 AAD SSH 登录：`ssh -o PreferredAuthentications=gssapi-with-mic -l <your_upn> <vm_public_ip>`
+- 验证提权：执行 `sudo -l` 与 `sudo whoami`（应返回 `root`）。
 - 其余各组在相应 RG 拥有 `Reader`。
 
 如需调整权限，请在 [main.tf](main.tf) 的 `local.alz_group_extra_rbac` 中按需增删对应条目后执行 `terraform plan && terraform apply`。

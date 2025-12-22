@@ -287,7 +287,7 @@ terraform apply tfplan_upn_override
 ## 🧑‍🤝‍🧑 RBAC 验证步骤（组用户）
 
 本实现为不同组的用户分配了针对性的 Azure RBAC：
-- nonprod/prod 组：对应环境工作负载 RG → `Contributor`；对应 VM → `Virtual Machine User Login`
+- nonprod/prod 组：对应环境工作负载 RG → `Contributor`；对应 VM → `Virtual Machine Administrator Login`
 - connectivity：连接性 RG → `Reader`
 - management/identity/decommissioned：可选/管理资源 RG → `Reader`
 - sandboxes：生产与非生产工作负载 RG → `Reader`
@@ -310,10 +310,14 @@ $vmId = az vm show -g $rg -n $vm --query id -o tsv
 # 资源组范围（应为 Reader 或 Contributor）
 az role assignment list --assignee $oid --scope $rgId -o table
 
-# VM 范围（应为 Virtual Machine User Login）
+# VM 范围（应为 Virtual Machine Administrator Login）
 az role assignment list --assignee $oid --scope $vmId -o table
 ```
 
 期望：
-- 非生产/生产组用户在对应 RG 显示 `Contributor`，在 VM 上显示 `Virtual Machine User Login`；
+- 非生产/生产组用户在对应 RG 显示 `Contributor`，在 VM 上显示 `Virtual Machine Administrator Login`；
+
+提示：如需在 VM 内执行 `sudo`，须确保用户拥有 `Virtual Machine Administrator Login`。验证方式：
+- 登录后执行 `sudo -l` 查看允许的命令；
+- 执行 `sudo whoami` 应返回 `root`；若失败，请检查 VM 范围角色分配。
 - 其他各组在相应 RG 显示 `Reader`。

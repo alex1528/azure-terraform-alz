@@ -322,8 +322,8 @@ First login will force password change; re-run the check script to confirm.
 
 This implementation assigns practical Azure RBAC permissions for each group to balance least-privilege with day-to-day usability. Baseline management group Reader remains in place.
 
-- Non-Production group (nonprod): `Contributor` on the Non-Prod workload resource group; `Virtual Machine User Login` on nonprod VMs.
-- Production group (prod): `Contributor` on the Prod workload resource group; `Virtual Machine User Login` on prod VMs.
+- Non-Production group (nonprod): `Contributor` on the Non-Prod workload resource group; `Virtual Machine Administrator Login` on nonprod VMs.
+- Production group (prod): `Contributor` on the Prod workload resource group; `Virtual Machine Administrator Login` on prod VMs.
 - Connectivity group: `Reader` on the connectivity resource group.
 - Management group: `Reader` on the optional/management resources resource group.
 - Identity group: `Reader` on the optional/management resources resource group.
@@ -333,7 +333,7 @@ This implementation assigns practical Azure RBAC permissions for each group to b
 Where it’s defined: see [main.tf](main.tf) `local.alz_group_extra_rbac` and the `module "iam_group_users"` wiring. Helpful outputs: [outputs.tf](outputs.tf) `alz_group_user_upns`, `resolved_upn_domain`.
 
 ### Verify in Azure Portal
-- Go to the target Resource Group → Access control (IAM) → Role assignments → filter by user or role; confirm `Reader`/`Contributor`/`Virtual Machine User Login` as specified above.
+- Go to the target Resource Group → Access control (IAM) → Role assignments → filter by user or role; confirm `Reader`/`Contributor`/`Virtual Machine Administrator Login` as specified above.
 
 ### Verify via Azure CLI
 Replace with actual UPN, resource group, and VM names:
@@ -350,11 +350,15 @@ $vmId = az vm show -g $rg -n $vm --query id -o tsv
 # RG-scope role (Reader or Contributor)
 az role assignment list --assignee $oid --scope $rgId -o table
 
-# VM-scope login role (Virtual Machine User Login)
+# VM-scope login role (Virtual Machine Administrator Login)
 az role assignment list --assignee $oid --scope $vmId -o table
 ```
 
-You should see Contributor on the correct workload RG for prod/nonprod users, Virtual Machine User Login on the corresponding VMs, and Reader on the relevant RGs for the other groups.
+You should see Contributor on the correct workload RG for prod/nonprod users, Virtual Machine Administrator Login on the corresponding VMs, and Reader on the relevant RGs for the other groups.
+
+Note: `Virtual Machine Administrator Login` is required to use `sudo` inside the VM after AAD SSH login. Quick verification:
+- SSH with AAD: `ssh -o PreferredAuthentications=gssapi-with-mic -l <your_upn> <vm_public_ip>`
+- Verify elevation: `sudo -l` and `sudo whoami` should succeed (expect `root`).
 
 
 ## 🌐 **Network Architecture Options**
