@@ -555,11 +555,11 @@ locals {
       },
       {
         scope                = module.workload_web_mysql_nonprod.web_vm_id
-        role_definition_name = "Virtual Machine User Login"
+        role_definition_name = "Virtual Machine Administrator Login"
       },
       {
         scope                = module.workload_web_mysql_nonprod.mysql_vm_id
-        role_definition_name = "Virtual Machine User Login"
+        role_definition_name = "Virtual Machine Administrator Login"
       }
     ]
     prod = [
@@ -569,11 +569,11 @@ locals {
       },
       {
         scope                = module.workload_web_mysql_prod.web_vm_id
-        role_definition_name = "Virtual Machine User Login"
+        role_definition_name = "Virtual Machine Administrator Login"
       },
       {
         scope                = module.workload_web_mysql_prod.mysql_vm_id
-        role_definition_name = "Virtual Machine User Login"
+        role_definition_name = "Virtual Machine Administrator Login"
       }
     ]
     connectivity = [
