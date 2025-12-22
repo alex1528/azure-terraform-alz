@@ -1,0 +1,856 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  ~ update in-place
+ <= read (data resources)
+
+Terraform will perform the following actions:
+
+  # azurerm_key_vault.platform_kv will be updated in-place
+  ~ resource "azurerm_key_vault" "platform_kv" {
+        id                              = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-optional-resources-rg/providers/Microsoft.KeyVault/vaults/bingohrplatformkv"
+        name                            = "bingohrplatformkv"
+      ~ tags                            = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (13 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # azurerm_private_endpoint.kv_pe will be updated in-place
+  ~ resource "azurerm_private_endpoint" "kv_pe" {
+        id                            = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-optional-resources-rg/providers/Microsoft.Network/privateEndpoints/bingohr-kv-pe"
+        name                          = "bingohr-kv-pe"
+      ~ tags                          = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (7 unchanged attributes hidden)
+
+        # (2 unchanged blocks hidden)
+    }
+
+  # module.compute.azurerm_linux_virtual_machine.vm[0] will be updated in-place
+  ~ resource "azurerm_linux_virtual_machine" "vm" {
+        id                                                     = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-compute-eastasia-rg/providers/Microsoft.Compute/virtualMachines/bingohr-vm"
+        name                                                   = "bingohr-vm"
+      ~ tags                                                   = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (39 unchanged attributes hidden)
+
+        # (4 unchanged blocks hidden)
+    }
+
+  # module.compute.azurerm_network_interface.vm_nic[0] will be updated in-place
+  ~ resource "azurerm_network_interface" "vm_nic" {
+        id                             = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-compute-eastasia-rg/providers/Microsoft.Network/networkInterfaces/bingohr-vm-nic"
+        name                           = "bingohr-vm-nic"
+      ~ tags                           = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (17 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.compute.azurerm_network_security_group.vm_nsg[0] will be updated in-place
+  ~ resource "azurerm_network_security_group" "vm_nsg" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-compute-eastasia-rg/providers/Microsoft.Network/networkSecurityGroups/bingohr-vm-nsg"
+        name                = "bingohr-vm-nsg"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.compute.azurerm_public_ip.vm_public_ip[0] will be updated in-place
+  ~ resource "azurerm_public_ip" "vm_public_ip" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-compute-eastasia-rg/providers/Microsoft.Network/publicIPAddresses/bingohr-vm-pip"
+        name                    = "bingohr-vm-pip"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (12 unchanged attributes hidden)
+    }
+
+  # module.compute.azurerm_resource_group.compute[0] will be updated in-place
+  ~ resource "azurerm_resource_group" "compute" {
+        id         = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-compute-eastasia-rg"
+        name       = "bingohr-compute-eastasia-rg"
+      ~ tags       = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.compute.azurerm_user_assigned_identity.vm_monitor_identity[0] will be updated in-place
+  ~ resource "azurerm_user_assigned_identity" "vm_monitor_identity" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-compute-eastasia-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/bingohr-vm-monitor-identity"
+        name                = "bingohr-vm-monitor-identity"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "12/22/2025 09:15:31"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (5 unchanged attributes hidden)
+    }
+
+  # module.compute.azurerm_virtual_network.compute_vnet[0] will be updated in-place
+  ~ resource "azurerm_virtual_network" "compute_vnet" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-compute-eastasia-rg/providers/Microsoft.Network/virtualNetworks/bingohr-compute-eastasia-vnet"
+        name                    = "bingohr-compute-eastasia-vnet"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (9 unchanged attributes hidden)
+    }
+
+  # module.connectivity[0].azurerm_bastion_host.main[0] will be updated in-place
+  ~ resource "azurerm_bastion_host" "main" {
+        id                     = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/bastionHosts/bingohr-hub-eastasia-vnet-bastion"
+        name                   = "bingohr-hub-eastasia-vnet-bastion"
+      ~ tags                   = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (12 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.connectivity[0].azurerm_firewall.hub[0] will be updated in-place
+  ~ resource "azurerm_firewall" "hub" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/azureFirewalls/bingohr-hub-eastasia-vnet-fw"
+        name                = "bingohr-hub-eastasia-vnet-fw"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (10 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.connectivity[0].azurerm_network_security_group.hub_subnets["snet-management"] will be updated in-place
+  ~ resource "azurerm_network_security_group" "hub_subnets" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/networkSecurityGroups/snet-management-nsg"
+        name                = "snet-management-nsg"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.connectivity[0].azurerm_network_security_group.hub_subnets["snet-shared-services"] will be updated in-place
+  ~ resource "azurerm_network_security_group" "hub_subnets" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/networkSecurityGroups/snet-shared-services-nsg"
+        name                = "snet-shared-services-nsg"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.connectivity[0].azurerm_public_ip.bastion[0] will be updated in-place
+  ~ resource "azurerm_public_ip" "bastion" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/publicIPAddresses/bingohr-hub-eastasia-vnet-bastion-pip"
+        name                    = "bingohr-hub-eastasia-vnet-bastion-pip"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (12 unchanged attributes hidden)
+    }
+
+  # module.connectivity[0].azurerm_public_ip.firewall[0] will be updated in-place
+  ~ resource "azurerm_public_ip" "firewall" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/publicIPAddresses/bingohr-hub-eastasia-vnet-fw-pip"
+        name                    = "bingohr-hub-eastasia-vnet-fw-pip"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (12 unchanged attributes hidden)
+    }
+
+  # module.connectivity[0].azurerm_resource_group.connectivity will be updated in-place
+  ~ resource "azurerm_resource_group" "connectivity" {
+        id         = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg"
+        name       = "bingohr-connectivity-eastasia-rg"
+      ~ tags       = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.connectivity[0].azurerm_route_table.spoke_routes[0] will be updated in-place
+  ~ resource "azurerm_route_table" "spoke_routes" {
+        id                            = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/routeTables/bingohr-hub-eastasia-vnet-spoke-rt"
+        name                          = "bingohr-hub-eastasia-vnet-spoke-rt"
+      ~ tags                          = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (6 unchanged attributes hidden)
+    }
+
+  # module.connectivity[0].azurerm_virtual_network.hub[0] will be updated in-place
+  ~ resource "azurerm_virtual_network" "hub" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/virtualNetworks/bingohr-hub-eastasia-vnet"
+        name                    = "bingohr-hub-eastasia-vnet"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "BingoHR-ALZ"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (9 unchanged attributes hidden)
+    }
+
+  # module.core_policies[0].azurerm_policy_definition.rg_require_tag_value will be updated in-place
+  ~ resource "azurerm_policy_definition" "rg_require_tag_value" {
+        id                  = "/providers/Microsoft.Management/managementGroups/bingohr-root/providers/Microsoft.Authorization/policyDefinitions/rg-require-tag-value"
+        name                = "rg-require-tag-value"
+      ~ parameters          = jsonencode(
+          ~ {
+              ~ effect   = {
+                  + default       = "Deny"
+                    # (3 unchanged attributes hidden)
+                }
+              ~ tagName  = {
+                  + default  = "Environment"
+                    # (2 unchanged attributes hidden)
+                }
+              ~ tagValue = {
+                  + default  = "ALZ"
+                    # (2 unchanged attributes hidden)
+                }
+            }
+        )
+        # (8 unchanged attributes hidden)
+    }
+
+  # module.iam_standard_user.data.azuread_user.created will be read during apply
+  # (depends on a resource or a module with changes pending)
+ <= data "azuread_user" "created" {
+      + account_enabled                = (known after apply)
+      + age_group                      = (known after apply)
+      + business_phones                = (known after apply)
+      + city                           = (known after apply)
+      + company_name                   = (known after apply)
+      + consent_provided_for_minor     = (known after apply)
+      + cost_center                    = (known after apply)
+      + country                        = (known after apply)
+      + creation_type                  = (known after apply)
+      + department                     = (known after apply)
+      + display_name                   = (known after apply)
+      + division                       = (known after apply)
+      + employee_hire_date             = (known after apply)
+      + employee_id                    = (known after apply)
+      + employee_type                  = (known after apply)
+      + external_user_state            = (known after apply)
+      + fax_number                     = (known after apply)
+      + given_name                     = (known after apply)
+      + id                             = (known after apply)
+      + im_addresses                   = (known after apply)
+      + job_title                      = (known after apply)
+      + mail                           = (known after apply)
+      + mail_nickname                  = (known after apply)
+      + manager_id                     = (known after apply)
+      + mobile_phone                   = (known after apply)
+      + object_id                      = "f2b3c99a-494b-4469-9557-5956f456312c"
+      + office_location                = (known after apply)
+      + onpremises_distinguished_name  = (known after apply)
+      + onpremises_domain_name         = (known after apply)
+      + onpremises_immutable_id        = (known after apply)
+      + onpremises_sam_account_name    = (known after apply)
+      + onpremises_security_identifier = (known after apply)
+      + onpremises_sync_enabled        = (known after apply)
+      + onpremises_user_principal_name = (known after apply)
+      + other_mails                    = (known after apply)
+      + postal_code                    = (known after apply)
+      + preferred_language             = (known after apply)
+      + proxy_addresses                = (known after apply)
+      + show_in_address_list           = (known after apply)
+      + state                          = (known after apply)
+      + street_address                 = (known after apply)
+      + surname                        = (known after apply)
+      + usage_location                 = (known after apply)
+      + user_principal_name            = (known after apply)
+      + user_type                      = (known after apply)
+    }
+
+  # module.optional_resources.azurerm_security_center_subscription_pricing.plan["Arm"] will be updated in-place
+  ~ resource "azurerm_security_center_subscription_pricing" "plan" {
+        id            = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/providers/Microsoft.Security/pricings/Arm"
+      - subplan       = "PerSubscription" -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.optional_resources.azurerm_security_center_subscription_pricing.plan["KeyVaults"] will be updated in-place
+  ~ resource "azurerm_security_center_subscription_pricing" "plan" {
+        id            = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/providers/Microsoft.Security/pricings/KeyVaults"
+      - subplan       = "PerKeyVault" -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.optional_resources.azurerm_security_center_subscription_pricing.plan["StorageAccounts"] will be updated in-place
+  ~ resource "azurerm_security_center_subscription_pricing" "plan" {
+        id            = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/providers/Microsoft.Security/pricings/StorageAccounts"
+      - subplan       = "DefenderForStorageV2" -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.optional_resources.azurerm_security_center_subscription_pricing.plan["VirtualMachines"] will be updated in-place
+  ~ resource "azurerm_security_center_subscription_pricing" "plan" {
+        id            = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/providers/Microsoft.Security/pricings/VirtualMachines"
+      - subplan       = "P2" -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_network_interface.mysql_nic will be updated in-place
+  ~ resource "azurerm_network_interface" "mysql_nic" {
+        id                             = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.Network/networkInterfaces/bingohr-nonprod-mysql-nic"
+        name                           = "bingohr-nonprod-mysql-nic"
+      ~ tags                           = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (17 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_network_interface.web_nic will be updated in-place
+  ~ resource "azurerm_network_interface" "web_nic" {
+        id                             = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.Network/networkInterfaces/bingohr-nonprod-web-nic"
+        name                           = "bingohr-nonprod-web-nic"
+      ~ tags                           = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (17 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_network_security_group.mysql_nsg will be updated in-place
+  ~ resource "azurerm_network_security_group" "mysql_nsg" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.Network/networkSecurityGroups/bingohr-nonprod-mysql-nsg"
+        name                = "bingohr-nonprod-mysql-nsg"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_network_security_group.web_nsg will be updated in-place
+  ~ resource "azurerm_network_security_group" "web_nsg" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.Network/networkSecurityGroups/bingohr-nonprod-web-nsg"
+        name                = "bingohr-nonprod-web-nsg"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_public_ip.web_pip[0] will be updated in-place
+  ~ resource "azurerm_public_ip" "web_pip" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.Network/publicIPAddresses/bingohr-nonprod-web-pip"
+        name                    = "bingohr-nonprod-web-pip"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (12 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_recovery_services_vault.vault will be updated in-place
+  ~ resource "azurerm_recovery_services_vault" "vault" {
+        id                                 = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.RecoveryServices/vaults/bingohr-nonprod-rsv"
+        name                               = "bingohr-nonprod-rsv"
+      ~ tags                               = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (9 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_resource_group.rg will be updated in-place
+  ~ resource "azurerm_resource_group" "rg" {
+        id         = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg"
+        name       = "bingohr-nonprod-webmysql-eastasia-rg"
+      ~ tags       = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_virtual_machine_extension.mysql_aad_login[0] will be updated in-place
+  ~ resource "azurerm_virtual_machine_extension" "mysql_aad_login" {
+        id                          = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.Compute/virtualMachines/bingohr-nonprod-mysql/extensions/AADLoginForLinux"
+        name                        = "AADLoginForLinux"
+      ~ tags                        = {
+          - "AADForce"            = "2025-12-18-1"
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (8 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_virtual_machine_extension.web_aad_login[0] will be updated in-place
+  ~ resource "azurerm_virtual_machine_extension" "web_aad_login" {
+        id                          = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.Compute/virtualMachines/bingohr-nonprod-web/extensions/AADLoginForLinux"
+        name                        = "AADLoginForLinux"
+      ~ tags                        = {
+          - "AADForce"            = "2025-12-18-1"
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (8 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_nonprod.azurerm_virtual_network.vnet[0] will be updated in-place
+  ~ resource "azurerm_virtual_network" "vnet" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-nonprod-webmysql-eastasia-rg/providers/Microsoft.Network/virtualNetworks/bingohr-nonprod-webmysql-eastasia-vnet"
+        name                    = "bingohr-nonprod-webmysql-eastasia-vnet"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "nonprod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (9 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_network_interface.mysql_nic will be updated in-place
+  ~ resource "azurerm_network_interface" "mysql_nic" {
+        id                             = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.Network/networkInterfaces/bingohr-prod-mysql-nic"
+        name                           = "bingohr-prod-mysql-nic"
+      ~ tags                           = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (17 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_network_interface.web_nic will be updated in-place
+  ~ resource "azurerm_network_interface" "web_nic" {
+        id                             = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.Network/networkInterfaces/bingohr-prod-web-nic"
+        name                           = "bingohr-prod-web-nic"
+      ~ tags                           = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (17 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_network_security_group.mysql_nsg will be updated in-place
+  ~ resource "azurerm_network_security_group" "mysql_nsg" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.Network/networkSecurityGroups/bingohr-prod-mysql-nsg"
+        name                = "bingohr-prod-mysql-nsg"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_network_security_group.web_nsg will be updated in-place
+  ~ resource "azurerm_network_security_group" "web_nsg" {
+        id                  = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.Network/networkSecurityGroups/bingohr-prod-web-nsg"
+        name                = "bingohr-prod-web-nsg"
+      ~ tags                = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_public_ip.web_pip[0] will be updated in-place
+  ~ resource "azurerm_public_ip" "web_pip" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.Network/publicIPAddresses/bingohr-prod-web-pip"
+        name                    = "bingohr-prod-web-pip"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (12 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_recovery_services_vault.vault will be updated in-place
+  ~ resource "azurerm_recovery_services_vault" "vault" {
+        id                                 = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.RecoveryServices/vaults/bingohr-prod-rsv"
+        name                               = "bingohr-prod-rsv"
+      ~ tags                               = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (9 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_resource_group.rg will be updated in-place
+  ~ resource "azurerm_resource_group" "rg" {
+        id         = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg"
+        name       = "bingohr-prod-webmysql-eastasia-rg"
+      ~ tags       = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_virtual_machine_extension.mysql_aad_login[0] will be updated in-place
+  ~ resource "azurerm_virtual_machine_extension" "mysql_aad_login" {
+        id                          = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.Compute/virtualMachines/bingohr-prod-mysql/extensions/AADLoginForLinux"
+        name                        = "AADLoginForLinux"
+      ~ tags                        = {
+          - "AADForce"            = "2025-12-18-1"
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (8 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_virtual_machine_extension.web_aad_login[0] will be updated in-place
+  ~ resource "azurerm_virtual_machine_extension" "web_aad_login" {
+        id                          = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.Compute/virtualMachines/bingohr-prod-web/extensions/AADLoginForLinux"
+        name                        = "AADLoginForLinux"
+      ~ tags                        = {
+          - "AADForce"            = "2025-12-18-1"
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (8 unchanged attributes hidden)
+    }
+
+  # module.workload_web_mysql_prod.azurerm_virtual_network.vnet[0] will be updated in-place
+  ~ resource "azurerm_virtual_network" "vnet" {
+        id                      = "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-prod-webmysql-eastasia-rg/providers/Microsoft.Network/virtualNetworks/bingohr-prod-webmysql-eastasia-vnet"
+        name                    = "bingohr-prod-webmysql-eastasia-vnet"
+      ~ tags                    = {
+          - "CostCenter"          = "IT-Infrastructure"
+          - "CreatedDate"         = "2025-12-16"
+          - "DeployedBy"          = "ALZ-Terraform"
+          - "Environment"         = "prod"
+          - "Framework"           = "Azure-Landing-Zones"
+          - "LastUpdated"         = "2025-12-22T09:15:31Z"
+          - "ManagedBy"           = "Terraform"
+          - "NetworkArchitecture" = "hub_spoke"
+          - "Owner"               = "BHR-Platform-Team@bingohr.com"
+          - "Project"             = "BingoHR-Azure-Landing-Zone"
+        } -> (known after apply)
+        # (9 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 43 to change, 0 to destroy.
