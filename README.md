@@ -406,6 +406,10 @@ Connected VNets:
 
 ## 🚀 **Quick Start**
 
+Tip: For RBAC model details (roles, scopes, and az CLI examples), see:
+- [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
+- [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
+
 ### **1. Prerequisites**
 
 **Azure Environment:**

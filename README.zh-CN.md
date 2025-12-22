@@ -239,6 +239,10 @@ graph TB
 ```
 
 ## 快速开始
+
+提示：如需了解 RBAC 模型细节（角色、作用范围与 az CLI 示例），请参阅：
+- [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
+- [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
 ### 1. 先决条件
 - Azure CLI 登录并选择管理订阅
 - Terraform >= 1.5.0
