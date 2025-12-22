@@ -4,6 +4,10 @@
 
 > 英文版请参见 [README.md](README.md)。
 
+## 🔗 快速链接
+- RBAC 角色指南（中文）: [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
+- RBAC Roles Guide (English): [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
+
 ## 提供的能力
 - 管理组层级：完整的 ALZ 管理组结构
 - 网络架构选型：Hub & Spoke、Virtual WAN 或无网络

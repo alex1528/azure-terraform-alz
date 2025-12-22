@@ -4,6 +4,10 @@
 
 > Language: This README is available in Chinese. See [README.zh-CN.md](README.zh-CN.md).
 
+## 🔗 Quick Links
+- RBAC Roles Guide (English): [AZURE_ROLES_GUIDE.md](AZURE_ROLES_GUIDE.md)
+- RBAC 角色指南（中文）: [AZURE_ROLES_GUIDE.zh-CN.md](AZURE_ROLES_GUIDE.zh-CN.md)
+
 ## 🎯 **What This Implementation Provides**
 
 This Terraform implementation delivers a **practical and balanced approach** to Azure Landing Zones:
