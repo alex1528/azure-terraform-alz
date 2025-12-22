@@ -255,6 +255,28 @@ echo -e "✅ 所有验证通过！可以执行 terraform apply"
 | `scripts/maintain-baselines.ps1` | 脚本 | 计划摘要维护 + 合规快照归档（自动提交/推送） |
 | `scripts/export-compliance-snapshot.ps1` | 脚本 | 管理组/订阅合规快照（JSON+Markdown）导出 |
 | `scripts/setup-maintenance-schedule.ps1` | 脚本 | 注册每日/每周维护计划任务（含快照） |
+| `scripts/check-force-password-change.ps1` | 脚本 | 检查所有新增用户的首次登录强制改密标志（Graph API） |
+
+### 身份验证脚本用法
+
+检查首次登录强制改密：
+
+```powershell
+pwsh -NoProfile scripts/check-force-password-change.ps1
+```
+
+预期所有用户 `ForceChangeOnNextSignIn = True`；如需启用自定义域覆盖，请先在 Entra ID 验证域名后修改 `terraform.tfvars`：
+
+```hcl
+upn_domain_override = "example.com"
+```
+
+然后执行：
+
+```powershell
+terraform plan -out tfplan_upn_override
+terraform apply tfplan_upn_override
+```
 
 ---
 

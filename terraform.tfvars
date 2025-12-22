@@ -134,8 +134,8 @@ deploy_managed_identity = true
 deploy_compute_resources = true
 
 # Virtual machine size
-# Options: Standard_B2s (2vCPU, 4GB - economical), Standard_D2s_v3 (2vCPU, 8GB - general purpose)
-vm_size = "Standard_D2s_v3"
+# Options: Standard_B2s (2vCPU, 4GB - economical), Standard_D2s_v5 (2vCPU, 8GB - general purpose)
+vm_size = "Standard_D2s_v5"
 
 # Operating system: "linux" (Ubuntu 22.04) or "windows" (Windows Server 2022)
 vm_os_type = "linux"
@@ -183,6 +183,9 @@ tags = {
   CreatedDate = "2025-12-16"
 }
 
+# UPN 域覆盖（需为“已验证域”）。如未验证企业域，请暂不设置，默认使用租户初始 onmicrosoft 域。
+# upn_domain_override = "your-verified-domain.com"
+
 # ============================================================================
 # DEFENDER FOR CLOUD (ENV-SPECIFIC OVERRIDES)
 # ============================================================================
@@ -215,3 +218,10 @@ defender_plans_nonprod = [
   "SqlServers",
   "Containers"
 ]
+
+# ============================================================================
+# COST MANAGEMENT (BUDGETS)
+# ============================================================================
+
+# Enable Cost Management budgets (set to false if subscription offer type is unsupported)
+enable_budgets = false

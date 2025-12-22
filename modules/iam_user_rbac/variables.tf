@@ -23,8 +23,8 @@ variable "force_password_change" {
 variable "role_assignments" {
   description = "List of role assignments with scope and role definition name"
   type = list(object({
-    scope                  = string
-    role_definition_name   = string
+    scope                = string
+    role_definition_name = string
   }))
   default = []
 }

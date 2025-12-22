@@ -269,6 +269,55 @@ az network bastion rdp \
 - 📊 Full audit trail of access through Azure Monitor
 - ✅ Complies with "Block RDP/SSH from Internet" policy
 
+## 👤 Identity Validation & First-Login Password Change
+
+This implementation includes guidance and tooling to ensure new users are prompted to change their initial password on first login and to avoid unverified custom domain issues.
+
+- Current state: `resolved_upn_domain` is `gdjiuyun.onmicrosoft.com` (no verified custom domain yet); all newly created users have `forceChangePasswordNextSignIn = true`.
+
+### Check via Graph API (one command)
+
+Run the script to verify the flag across all users:
+
+```powershell
+pwsh -NoProfile scripts/check-force-password-change.ps1
+```
+
+Expected output (sample):
+
+```
+UPN                                  ForceChangeOnNextSignIn
+stduser@gdjiuyun.onmicrosoft.com     True
+bingohr-<group>-user@gdjiuyun.onmicrosoft.com  True
+...
+```
+
+### Custom Domain Override (after verification)
+
+Once your corporate domain is verified in Entra ID, set in `terraform.tfvars`:
+
+```hcl
+upn_domain_override = "example.com"
+```
+
+Then plan/apply:
+
+```powershell
+terraform plan -out tfplan_upn_override
+terraform apply tfplan_upn_override
+```
+
+Note: Overriding to an unverified domain results in Azure AD 400 errors and is rejected.
+
+### First Login Guidance
+
+Before domain verification, use the following UPNs to sign in to Azure Portal:
+
+- Standard user: `stduser@gdjiuyun.onmicrosoft.com`
+- Group users: `bingohr-<group>-user@gdjiuyun.onmicrosoft.com`
+
+First login will force password change; re-run the check script to confirm.
+
 ## 🌐 **Network Architecture Options**
 
 ### **Option 1: Hub & Spoke (Default)**
@@ -616,6 +665,15 @@ After deployment, you'll have access to:
 - Resource tagging for cost allocation
 - Optional resource deployment to control expenses
 - Proper resource naming for cost center identification
+
+## ✅ Post-Deployment Validation
+
+- 登录与网络验证指南: 参见 [VALIDATION_SSH_AND_NETWORK.md](VALIDATION_SSH_AND_NETWORK.md)
+- 建议执行：
+  - AAD SSH 登录（Bastion 或 `az ssh vm`）
+  - 扩展健康：`AADLoginForLinux`
+  - 出站连通性：Ubuntu 源与 Azure 登录端点探测（RunCommand）
+  - 备份健康：受保护项与最近作业
 
 ## ❓ **FAQ**
 

@@ -310,3 +310,52 @@ pwsh scripts/setup-maintenance-schedule.ps1 -CreateWeekly -WeeklyDay Sunday -Wee
 ---
 
 以简洁、可维护为原则构建，适用于生产环境的落地实施。
+
+## 👤 身份验证与首次登录改密（中文）
+
+为确保新增用户的首次登录必须修改初始密码，并避免使用未验证的自定义域导致的“用户名可能不正确”提示，本实现提供以下步骤与脚本：
+
+- 核心结论：当前租户未验证自定义域，`resolved_upn_domain` 为 `gdjiuyun.onmicrosoft.com`；所有新增用户均已设置 `forceChangePasswordNextSignIn = true`。
+
+### 一键检查（Graph API）
+
+使用脚本检查所有用户是否启用首次登录强制改密：
+
+```powershell
+pwsh -NoProfile scripts/check-force-password-change.ps1
+```
+
+期望输出示例：
+
+```
+UPN                                          ForceChangeOnNextSignIn
+stduser@gdjiuyun.onmicrosoft.com            True
+bingohr-<group>-user@gdjiuyun.onmicrosoft.com True
+...
+```
+
+### 自定义域覆盖（在完成域验证后）
+
+当您的企业域在 Entra ID 中完成验证后，可在 `terraform.tfvars` 中设置：
+
+```hcl
+upn_domain_override = "example.com"
+```
+
+随后执行：
+
+```powershell
+terraform plan -out tfplan_upn_override
+terraform apply tfplan_upn_override
+```
+
+注意：若覆盖为未验证域，Azure AD 将返回 400 错误并拒绝更新。
+
+### 首次登录指南
+
+在自定义域验证前，使用下述 UPN 登录 Azure Portal：
+
+- 标准用户：`stduser@gdjiuyun.onmicrosoft.com`
+- 组用户：`bingohr-<group>-user@gdjiuyun.onmicrosoft.com`
+
+首次登录将被强制修改初始密码；如需复核，请运行上述检查脚本。

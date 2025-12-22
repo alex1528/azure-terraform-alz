@@ -91,12 +91,12 @@ locals {
   ) : null
   effective_defender_tier = var.observability_environment == "prod" ? (
     var.defender_tier_prod != "" ? var.defender_tier_prod : var.defender_tier
-  ) : (
+    ) : (
     var.defender_tier_nonprod != "" ? var.defender_tier_nonprod : var.defender_tier
   )
   effective_defender_plans = var.observability_environment == "prod" ? (
     length(var.defender_plans_prod) > 0 ? var.defender_plans_prod : var.defender_plans
-  ) : (
+    ) : (
     length(var.defender_plans_nonprod) > 0 ? var.defender_plans_nonprod : var.defender_plans
   )
 }

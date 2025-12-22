@@ -8,10 +8,17 @@ output "vnet_id" {
   value       = var.create_vnet ? azurerm_virtual_network.vnet[0].id : null
 }
 
+output "vnet_name" {
+  description = "Name of the workload VNet (when created)"
+  value       = var.create_vnet ? azurerm_virtual_network.vnet[0].name : null
+}
+
 output "subnet_id" {
   description = "ID of the workload subnet (when created)"
   value       = var.create_vnet ? azurerm_subnet.subnet[0].id : var.existing_subnet_id
-}output "web_private_ip" {
+}
+
+output "web_private_ip" {
   description = "Web VM private IP"
   value       = azurerm_network_interface.web_nic.ip_configuration[0].private_ip_address
 }
@@ -24,11 +31,6 @@ output "mysql_private_ip" {
 output "web_public_ip" {
   description = "Web public IP (if assigned)"
   value       = try(azurerm_public_ip.web_pip[0].ip_address, null)
-}
-
-output "resource_group_id" {
-  description = "Resource group ID for the workload"
-  value       = azurerm_resource_group.rg.id
 }
 
 output "resource_group_name" {

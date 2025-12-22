@@ -172,6 +172,130 @@ resource "azurerm_firewall" "hub" {
   }
 }
 
+# Allow essential egress for VM extensions and updates via Azure Firewall
+resource "azurerm_firewall_application_rule_collection" "egress_basics" {
+  count               = var.deploy_hub_spoke && var.deploy_azure_firewall ? 1 : 0
+  name                = "${var.hub_vnet_name}-app-egress-basics"
+  resource_group_name = azurerm_resource_group.connectivity.name
+  azure_firewall_name = azurerm_firewall.hub[0].name
+  action              = "Allow"
+  priority            = 100
+
+  rule {
+    name             = "allow-ubuntu-apt"
+    source_addresses = ["10.11.1.0/24", "10.12.1.0/24"]
+    target_fqdns     = ["azure.archive.ubuntu.com", "archive.ubuntu.com", "security.ubuntu.com"]
+    protocol {
+      type = "Http"
+      port = 80
+    }
+    protocol {
+      type = "Https"
+      port = 443
+    }
+  }
+
+  # Broaden coverage for Ubuntu/CDN endpoints
+  rule {
+    name             = "allow-ubuntu-wildcards"
+    source_addresses = ["10.11.1.0/24", "10.12.1.0/24"]
+    target_fqdns     = ["*.ubuntu.com", "*.canonical.com", "changelogs.ubuntu.com", "esm.ubuntu.com"]
+    protocol {
+      type = "Http"
+      port = 80
+    }
+    protocol {
+      type = "Https"
+      port = 443
+    }
+  }
+
+  rule {
+    name             = "allow-ms-packages"
+    source_addresses = ["10.11.1.0/24", "10.12.1.0/24"]
+    target_fqdns     = ["packages.microsoft.com"]
+    protocol {
+      type = "Https"
+      port = 443
+    }
+  }
+
+  rule {
+    name             = "allow-azure-auth-mgmt"
+    source_addresses = ["10.11.1.0/24", "10.12.1.0/24"]
+    target_fqdns = [
+      "login.microsoftonline.com",
+      "management.azure.com",
+      "login.windows.net"
+    ]
+    protocol {
+      type = "Https"
+      port = 443
+    }
+  }
+
+  # Common Azure CDN/edge endpoints that some services rely on
+  rule {
+    name             = "allow-azure-common-cdn"
+    source_addresses = ["10.11.1.0/24", "10.12.1.0/24"]
+    target_fqdns     = ["*.microsoft.com", "*.windows.net", "*.azureedge.net"]
+    protocol {
+      type = "Https"
+      port = 443
+    }
+  }
+
+  # Snapcraft endpoints for Ubuntu packages/snaps
+  rule {
+    name             = "allow-snapcraft"
+    source_addresses = ["10.11.1.0/24", "10.12.1.0/24"]
+    target_fqdns     = ["snapcraft.io", "api.snapcraft.io"]
+    protocol {
+      type = "Https"
+      port = 443
+    }
+  }
+
+  rule {
+    name             = "allow-azure-backup-storage"
+    source_addresses = ["10.11.1.0/24", "10.12.1.0/24"]
+    target_fqdns = [
+      "*.backup.windowsazure.com",
+      "*.blob.core.windows.net",
+      "aka.ms"
+    ]
+    protocol {
+      type = "Https"
+      port = 443
+    }
+  }
+}
+
+resource "azurerm_firewall_network_rule_collection" "egress_platform" {
+  count               = var.deploy_hub_spoke && var.deploy_azure_firewall ? 1 : 0
+  name                = "${var.hub_vnet_name}-net-egress-platform"
+  resource_group_name = azurerm_resource_group.connectivity.name
+  azure_firewall_name = azurerm_firewall.hub[0].name
+  action              = "Allow"
+  priority            = 110
+
+  rule {
+    name                  = "allow-azure-platform-16863"
+    source_addresses      = ["10.11.1.0/24", "10.12.1.0/24"]
+    destination_addresses = ["168.63.129.16"]
+    destination_ports     = ["80", "443"]
+    protocols             = ["TCP"]
+  }
+
+  rule {
+    name                  = "allow-azure-dns-16863"
+    source_addresses      = ["10.11.1.0/24", "10.12.1.0/24"]
+    destination_addresses = ["168.63.129.16"]
+    destination_ports     = ["53"]
+    protocols             = ["UDP"]
+  }
+}
+
 # Azure Firewall (Virtual WAN)
 resource "azurerm_firewall" "vwan" {
   count               = var.deploy_vwan && var.deploy_azure_firewall ? 1 : 0

@@ -70,7 +70,7 @@ variable "defender_tier" {
 variable "defender_plans" {
   description = "Set of Defender plans (resource types) to enable pricing for"
   type        = set(string)
-  default     = [
+  default = [
     "VirtualMachines",
     "AppServices",
     "SqlServers",

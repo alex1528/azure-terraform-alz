@@ -168,31 +168,31 @@ locals {
 
   # Short names for policy assignment (Azure limit: <= 24 chars)
   platform_policy_names = {
-    require_storage_https               = "core-sto-https"
-    require_sql_tde                     = "core-sql-tde"
-    require_vm_backup                   = "core-vm-bkup"
-    allowed_locations                   = "core-allowedloc"
-    require_environment_tag             = "core-tag-env"
-    require_cost_center_tag             = "core-tag-cost"
-    require_owner_tag                   = "core-tag-owner"
-    enforce_environment_tag_value       = "core-tagv-env"
-    enforce_cost_center_tag_value       = "core-tagv-cost"
-    enforce_owner_tag_value             = "core-tagv-owner"
-    deny_rdp_from_internet              = "core-deny-rdp"
-    deny_ssh_from_internet              = "core-deny-ssh"
-    require_key_vault_purge_protection  = "core-kv-purge"
-    require_activity_log_retention      = "core-activitylog"
+    require_storage_https              = "core-sto-https"
+    require_sql_tde                    = "core-sql-tde"
+    require_vm_backup                  = "core-vm-bkup"
+    allowed_locations                  = "core-allowedloc"
+    require_environment_tag            = "core-tag-env"
+    require_cost_center_tag            = "core-tag-cost"
+    require_owner_tag                  = "core-tag-owner"
+    enforce_environment_tag_value      = "core-tagv-env"
+    enforce_cost_center_tag_value      = "core-tagv-cost"
+    enforce_owner_tag_value            = "core-tagv-owner"
+    deny_rdp_from_internet             = "core-deny-rdp"
+    deny_ssh_from_internet             = "core-deny-ssh"
+    require_key_vault_purge_protection = "core-kv-purge"
+    require_activity_log_retention     = "core-activitylog"
   }
 
   lz_policy_names = {
-    require_storage_https   = "lz-sto-https"
-    require_sql_tde         = "lz-sql-tde"
-    require_vm_backup       = "lz-vm-bkup"
-    deny_rdp_from_internet  = "lz-deny-rdp"
-    deny_ssh_from_internet  = "lz-deny-ssh"
-    require_environment_tag = "lz-tag-env"
-    require_cost_center_tag = "lz-tag-cost"
-    require_owner_tag       = "lz-tag-owner"
+    require_storage_https         = "lz-sto-https"
+    require_sql_tde               = "lz-sql-tde"
+    require_vm_backup             = "lz-vm-bkup"
+    deny_rdp_from_internet        = "lz-deny-rdp"
+    deny_ssh_from_internet        = "lz-deny-ssh"
+    require_environment_tag       = "lz-tag-env"
+    require_cost_center_tag       = "lz-tag-cost"
+    require_owner_tag             = "lz-tag-owner"
     enforce_environment_tag_value = "lz-tagv-env"
     enforce_cost_center_tag_value = "lz-tagv-cost"
     enforce_owner_tag_value       = "lz-tagv-owner"
@@ -234,11 +234,11 @@ locals {
 # ============================================================================
 
 resource "azurerm_policy_definition" "rg_require_tag_value" {
-  name         = "rg-require-tag-value"
-  display_name = "Require a specific tag value on resource groups"
-  policy_type  = "Custom"
-  mode         = "All"
-  description  = "Deny resource group creation/update when the specified tag is missing or its value differs from the required value."
+  name                = "rg-require-tag-value"
+  display_name        = "Require a specific tag value on resource groups"
+  policy_type         = "Custom"
+  mode                = "All"
+  description         = "Deny resource group creation/update when the specified tag is missing or its value differs from the required value."
   management_group_id = var.root_management_group_id
 
   metadata = jsonencode({
@@ -248,20 +248,20 @@ resource "azurerm_policy_definition" "rg_require_tag_value" {
 
   parameters = jsonencode({
     tagName = {
-      type        = "String"
-      metadata    = { displayName = "Tag Name" }
-      default     = "Environment"
+      type     = "String"
+      metadata = { displayName = "Tag Name" }
+      default  = "Environment"
     }
     tagValue = {
-      type        = "String"
-      metadata    = { displayName = "Required Tag Value" }
-      default     = "ALZ"
+      type     = "String"
+      metadata = { displayName = "Required Tag Value" }
+      default  = "ALZ"
     }
     effect = {
-      type     = "String"
-      metadata = { displayName = "Effect" }
+      type          = "String"
+      metadata      = { displayName = "Effect" }
       allowedValues = ["Audit", "Deny", "Disabled"]
-      default  = "Deny"
+      default       = "Deny"
     }
   })
 
@@ -275,7 +275,7 @@ resource "azurerm_policy_definition" "rg_require_tag_value" {
         {
           anyOf = [
             {
-              field    = "[concat('tags[', parameters('tagName'), ']')]"
+              field     = "[concat('tags[', parameters('tagName'), ']')]"
               notEquals = "[parameters('tagValue')]"
             },
             {
@@ -480,9 +480,9 @@ resource "azurerm_management_group_policy_assignment" "dine_nsg" {
   }
 
   parameters = jsonencode({
-    logAnalytics                         = { value = var.log_analytics_workspace_id }
-    diagnosticsSettingNameToUse          = { value = "setByPolicy" }
-    NetworkSecurityGroupEventEnabled     = { value = var.nsg_event_enabled }
+    logAnalytics                           = { value = var.log_analytics_workspace_id }
+    diagnosticsSettingNameToUse            = { value = "setByPolicy" }
+    NetworkSecurityGroupEventEnabled       = { value = var.nsg_event_enabled }
     NetworkSecurityGroupRuleCounterEnabled = { value = var.nsg_rule_counter_enabled }
   })
 }

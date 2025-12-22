@@ -285,3 +285,39 @@ output "iam_user_initial_password" {
   value       = random_password.iam_user_initial.result
   sensitive   = true
 }
+
+# ============================================================================
+# IAM: PER-MANAGEMENT-GROUP USERS OUTPUTS
+# ============================================================================
+
+output "alz_group_user_upns" {
+  description = "UPNs of the per-management-group portal users (keyed by group)."
+  value       = { for k, m in module.iam_group_users : k => m.user_principal_name }
+}
+
+output "alz_group_user_initial_passwords" {
+  description = "Initial passwords for per-management-group users (keyed by group). Rotate on first login."
+  value       = { for k in keys(module.iam_group_users) : k => random_password.alz_group_user_initial[k].result }
+  sensitive   = true
+}
+
+# ============================================================================
+# IDENTITY: UPN DOMAIN RESOLUTION (DEBUG/VERIFICATION)
+# ============================================================================
+
+output "resolved_upn_domain" {
+  description = "The resolved UPN domain used for created users (override > verified default > verified custom > initial)."
+  value       = local.default_domain
+}
+
+output "tenant_domain_candidates" {
+  description = "Tenant domains and flags (default/verified/initial) to aid debugging UPN selection."
+  value = [
+    for d in local.tenant_domains : {
+      name     = d.domain_name
+      default  = try(d.is_default, false)
+      verified = try(d.is_verified, false)
+      initial  = try(d.is_initial, false)
+    }
+  ]
+}

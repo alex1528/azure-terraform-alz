@@ -22,7 +22,7 @@ variable "tags" {
 variable "vm_size" {
   description = "VM size for both web and mysql VMs"
   type        = string
-  default     = "Standard_D2s_v3"
+  default     = "Standard_D2s_v5"
 }
 
 variable "admin_username" {
@@ -114,4 +114,17 @@ variable "spoke_route_table_id" {
   description = "Optional route table ID to associate with the workload subnet to force egress through the hub firewall"
   type        = string
   default     = ""
+}
+
+# Addressing (parameterized to avoid overlaps across environments)
+variable "vnet_address_space" {
+  description = "Address space for the workload VNet"
+  type        = list(string)
+  default     = ["10.11.0.0/16"]
+}
+
+variable "subnet_prefixes" {
+  description = "Address prefixes for the workload subnet(s)"
+  type        = list(string)
+  default     = ["10.11.1.0/24"]
 }

@@ -1,0 +1,408 @@
+{
+  "tenant": {
+    "name": "内部openai测试英才",
+    "subscription": "2884693e-1b1f-4182-a931-38fce22157c4",
+    "id": "11279d3a-ad76-4a6f-baae-8596e6ade025"
+  },
+  "managementGroups": {
+    "decommissioned": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "BingoHR ALZ",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-root",
+          "name": "bingohr-root"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:34:15.399376+08:00",
+        "version": 1
+      },
+      "displayName": "Decommissioned",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-decommissioned",
+      "name": "bingohr-decommissioned",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "platform": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "BingoHR ALZ",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-root",
+          "name": "bingohr-root"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:34:12.309422+08:00",
+        "version": 1
+      },
+      "displayName": "Platform",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-platform",
+      "name": "bingohr-platform",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "landingZones": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "BingoHR ALZ",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-root",
+          "name": "bingohr-root"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:34:13.507233+08:00",
+        "version": 1
+      },
+      "displayName": "Landing Zones",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-landingzones",
+      "name": "bingohr-landingzones",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "identity": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "Platform",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-platform",
+          "name": "bingohr-platform"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:34:50.095433+08:00",
+        "version": 1
+      },
+      "displayName": "Identity",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-identity",
+      "name": "bingohr-identity",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "connectivity": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "Platform",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-platform",
+          "name": "bingohr-platform"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:34:49.854739+08:00",
+        "version": 1
+      },
+      "displayName": "Connectivity",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-connectivity",
+      "name": "bingohr-connectivity",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "sandboxes": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "BingoHR ALZ",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-root",
+          "name": "bingohr-root"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:34:20.502432+08:00",
+        "version": 1
+      },
+      "displayName": "Sandboxes",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-sandboxes",
+      "name": "bingohr-sandboxes",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "nonprod": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "Landing Zones",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-landingzones",
+          "name": "bingohr-landingzones"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:35:08.273693+08:00",
+        "version": 1
+      },
+      "displayName": "Non-Production",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-nonprod",
+      "name": "bingohr-nonprod",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "prod": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "Landing Zones",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-landingzones",
+          "name": "bingohr-landingzones"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:34:53.382356+08:00",
+        "version": 1
+      },
+      "displayName": "Production",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-prod",
+      "name": "bingohr-prod",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "root": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "Tenant Root Group",
+          "id": "/providers/Microsoft.Management/managementGroups/11279d3a-ad76-4a6f-baae-8596e6ade025",
+          "name": "11279d3a-ad76-4a6f-baae-8596e6ade025"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:33:46.984972+08:00",
+        "version": 1
+      },
+      "displayName": "BingoHR ALZ",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-root",
+      "name": "bingohr-root",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    },
+    "management": {
+      "children": null,
+      "details": {
+        "managementGroupAncestors": null,
+        "managementGroupAncestorsChain": null,
+        "parent": {
+          "displayName": "Platform",
+          "id": "/providers/Microsoft.Management/managementGroups/bingohr-platform",
+          "name": "bingohr-platform"
+        },
+        "path": null,
+        "updatedBy": "2c08009a-7b5f-47a3-ab79-f4d685b0b2a9",
+        "updatedTime": "2025-12-17T11:34:47.933581+08:00",
+        "version": 1
+      },
+      "displayName": "Management",
+      "id": "/providers/Microsoft.Management/managementGroups/bingohr-management",
+      "name": "bingohr-management",
+      "tenantId": "11279d3a-ad76-4a6f-baae-8596e6ade025",
+      "type": "Microsoft.Management/managementGroups"
+    }
+  },
+  "policyEnforcement": "Default",
+  "defenderPricing": [
+    {
+      "tier": "Standard",
+      "type": "VirtualMachines"
+    },
+    {
+      "tier": "Standard",
+      "type": "SqlServers"
+    },
+    {
+      "tier": "Standard",
+      "type": "AppServices"
+    },
+    {
+      "tier": "Standard",
+      "type": "StorageAccounts"
+    },
+    {
+      "tier": "Free",
+      "type": "SqlServerVirtualMachines"
+    },
+    {
+      "tier": "Free",
+      "type": "KubernetesService"
+    },
+    {
+      "tier": "Free",
+      "type": "ContainerRegistry"
+    },
+    {
+      "tier": "Standard",
+      "type": "KeyVaults"
+    },
+    {
+      "tier": "Free",
+      "type": "Dns"
+    },
+    {
+      "tier": "Standard",
+      "type": "Arm"
+    },
+    {
+      "tier": "Standard",
+      "type": "OpenSourceRelationalDatabases"
+    },
+    {
+      "tier": "Standard",
+      "type": "CosmosDbs"
+    },
+    {
+      "tier": "Standard",
+      "type": "Containers"
+    },
+    {
+      "tier": "Free",
+      "type": "CloudPosture"
+    },
+    {
+      "tier": "Free",
+      "type": "Api"
+    },
+    {
+      "tier": "Free",
+      "type": "AI"
+    },
+    {
+      "tier": "Standard",
+      "type": "Discovery"
+    },
+    {
+      "tier": "Standard",
+      "type": "FoundationalCspm"
+    }
+  ],
+  "connectivity": {
+    "firewall": {
+      "additionalProperties": {},
+      "applicationRuleCollections": [],
+      "etag": "W/\"985d17f2-ca85-4989-813a-0e9a59d25a18\"",
+      "id": "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/azureFirewalls/bingohr-hub-eastasia-vnet-fw",
+      "ipConfigurations": [
+        {
+          "etag": "W/\"985d17f2-ca85-4989-813a-0e9a59d25a18\"",
+          "id": "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/azureFirewalls/bingohr-hub-eastasia-vnet-fw/azureFirewallIpConfigurations/configuration",
+          "name": "configuration",
+          "privateIPAddress": "10.100.3.4",
+          "provisioningState": "Succeeded",
+          "publicIPAddress": {
+            "id": "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/publicIPAddresses/bingohr-hub-eastasia-vnet-fw-pip",
+            "resourceGroup": "bingohr-connectivity-eastasia-rg"
+          },
+          "resourceGroup": "bingohr-connectivity-eastasia-rg",
+          "subnet": {
+            "id": "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/virtualNetworks/bingohr-hub-eastasia-vnet/subnets/AzureFirewallSubnet",
+            "resourceGroup": "bingohr-connectivity-eastasia-rg"
+          },
+          "type": "Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations"
+        }
+      ],
+      "location": "eastasia",
+      "name": "bingohr-hub-eastasia-vnet-fw",
+      "natRuleCollections": [],
+      "networkRuleCollections": [],
+      "provisioningState": "Succeeded",
+      "resourceGroup": "bingohr-connectivity-eastasia-rg",
+      "sku": {
+        "name": "AZFW_VNet",
+        "tier": "Standard"
+      },
+      "tags": {
+        "CostCenter": "IT-Infrastructure",
+        "CreatedDate": "2025-12-16",
+        "DeployedBy": "ALZ-Terraform",
+        "Environment": "BingoHR-ALZ",
+        "Framework": "Azure-Landing-Zones",
+        "LastUpdated": "2025-12-19T00:58:36Z",
+        "ManagedBy": "Terraform",
+        "NetworkArchitecture": "hub_spoke",
+        "Owner": "BHR-Platform-Team@bingohr.com",
+        "Project": "BingoHR-Azure-Landing-Zone"
+      },
+      "threatIntelMode": "Alert",
+      "type": "Microsoft.Network/azureFirewalls"
+    },
+    "bastion": {
+      "dnsName": "bst-9930aba6-846d-4937-b88a-5d489fab6d33.bastion.azure.com",
+      "enableTunneling": true,
+      "etag": "W/\"f31e84af-daed-41d8-a5b6-7a12ea2af583\"",
+      "id": "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/bastionHosts/bingohr-hub-eastasia-vnet-bastion",
+      "ipConfigurations": [
+        {
+          "etag": "W/\"f31e84af-daed-41d8-a5b6-7a12ea2af583\"",
+          "id": "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/bastionHosts/bingohr-hub-eastasia-vnet-bastion/bastionHostIpConfigurations/configuration",
+          "name": "configuration",
+          "privateIPAllocationMethod": "Dynamic",
+          "provisioningState": "Succeeded",
+          "publicIPAddress": {
+            "id": "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/publicIPAddresses/bingohr-hub-eastasia-vnet-bastion-pip",
+            "resourceGroup": "bingohr-connectivity-eastasia-rg"
+          },
+          "resourceGroup": "bingohr-connectivity-eastasia-rg",
+          "subnet": {
+            "id": "/subscriptions/2884693e-1b1f-4182-a931-38fce22157c4/resourceGroups/bingohr-connectivity-eastasia-rg/providers/Microsoft.Network/virtualNetworks/bingohr-hub-eastasia-vnet/subnets/AzureBastionSubnet",
+            "resourceGroup": "bingohr-connectivity-eastasia-rg"
+          },
+          "type": "Microsoft.Network/bastionHosts/bastionHostIpConfigurations"
+        }
+      ],
+      "location": "eastasia",
+      "name": "bingohr-hub-eastasia-vnet-bastion",
+      "provisioningState": "Succeeded",
+      "resourceGroup": "bingohr-connectivity-eastasia-rg",
+      "scaleUnits": 2,
+      "sku": {
+        "name": "Standard"
+      },
+      "tags": {
+        "CostCenter": "IT-Infrastructure",
+        "CreatedDate": "2025-12-16",
+        "DeployedBy": "ALZ-Terraform",
+        "Environment": "BingoHR-ALZ",
+        "Framework": "Azure-Landing-Zones",
+        "LastUpdated": "2025-12-19T00:58:36Z",
+        "ManagedBy": "Terraform",
+        "NetworkArchitecture": "hub_spoke",
+        "Owner": "BHR-Platform-Team@bingohr.com",
+        "Project": "BingoHR-Azure-Landing-Zone"
+      },
+      "type": "Microsoft.Network/bastionHosts"
+    }
+  },
+  "workloads": {
+    "nonprod": {
+      "resourceGroup": "bingohr-nonprod-webmysql-eastasia-rg",
+      "rsv": null
+    },
+    "prod": {
+      "resourceGroup": "bingohr-prod-webmysql-eastasia-rg",
+      "rsv": null
+    }
+  },
+  "budgets": null,
+  "privateLink": {
+    "privateEndpoints": null,
+    "dnsZone": null,
+    "keyVault": null
+  },
+  "generatedAt": "2025-12-19T11:40:59"
+}

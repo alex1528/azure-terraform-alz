@@ -28,10 +28,14 @@ resource "azurerm_resource_group" "rg" {
 resource "azurerm_virtual_network" "vnet" {
   count               = var.create_vnet ? 1 : 0
   name                = "${var.resource_prefix}-${var.env}-webmysql-${var.location}-vnet"
-  address_space       = ["10.11.0.0/16"]
+  address_space       = var.vnet_address_space
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
   tags                = var.tags
+}
+
+locals {
+  active_subnet_id = var.create_vnet ? (length(var.subnet_prefixes) > 1 ? azurerm_subnet.subnet_v2[0].id : azurerm_subnet.subnet[0].id) : var.existing_subnet_id
 }
 
 resource "azurerm_subnet" "subnet" {
@@ -39,14 +43,22 @@ resource "azurerm_subnet" "subnet" {
   name                 = "${var.resource_prefix}-${var.env}-webmysql-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet[0].name
-  address_prefixes     = ["10.11.1.0/24"]
+  address_prefixes     = [var.subnet_prefixes[0]]
+}
+
+resource "azurerm_subnet" "subnet_v2" {
+  count                = var.create_vnet && length(var.subnet_prefixes) > 1 ? 1 : 0
+  name                 = "${var.resource_prefix}-${var.env}-webmysql-subnet-v2"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet[0].name
+  address_prefixes     = [var.subnet_prefixes[1]]
 }
 
 # Associate route table to workload subnet to force egress via hub firewall (if provided)
 resource "azurerm_subnet_route_table_association" "subnet_rt" {
-  count                  = var.create_vnet && var.spoke_route_table_id != "" ? 1 : 0
-  subnet_id              = azurerm_subnet.subnet[0].id
-  route_table_id         = var.spoke_route_table_id
+  count          = var.create_vnet && var.spoke_route_table_id != "" ? 1 : 0
+  subnet_id      = local.active_subnet_id
+  route_table_id = var.spoke_route_table_id
 }
 
 # NSGs
@@ -196,7 +208,7 @@ resource "azurerm_network_interface" "web_nic" {
 
   ip_configuration {
     name                          = "ipcfg"
-    subnet_id                     = var.create_vnet ? azurerm_subnet.subnet[0].id : var.existing_subnet_id
+    subnet_id                     = local.active_subnet_id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = var.assign_public_ip ? azurerm_public_ip.web_pip[0].id : null
   }
@@ -210,7 +222,7 @@ resource "azurerm_network_interface" "mysql_nic" {
 
   ip_configuration {
     name                          = "ipcfg"
-    subnet_id                     = var.create_vnet ? azurerm_subnet.subnet[0].id : var.existing_subnet_id
+    subnet_id                     = local.active_subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -312,9 +324,9 @@ UNIT"
   EOT
 }
 
-  # Content for web app and systemd unit, written via VM extension
-  locals {
-    web_app_py = <<-PY
+# Content for web app and systemd unit, written via VM extension
+locals {
+  web_app_py = <<-PY
     from flask import Flask
     import mysql.connector
 
@@ -363,7 +375,7 @@ UNIT"
       app.run(host='0.0.0.0', port=80)
     PY
 
-    web_service_unit = <<-UNIT
+  web_service_unit = <<-UNIT
     [Unit]
     Description=Flask App
     After=network-online.target
@@ -380,19 +392,19 @@ UNIT"
     WantedBy=multi-user.target
     UNIT
 
-    web_app_py_b64         = base64encode(local.web_app_py)
-    web_service_unit_b64   = base64encode(local.web_service_unit)
-  }
+  web_app_py_b64       = base64encode(local.web_app_py)
+  web_service_unit_b64 = base64encode(local.web_service_unit)
+}
 
 # Web VM
 resource "azurerm_linux_virtual_machine" "web" {
-  name                = "${var.resource_prefix}-${var.env}-web"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
-  size                = var.vm_size
-  admin_username      = var.admin_username
+  name                            = "${var.resource_prefix}-${var.env}-web"
+  location                        = var.location
+  resource_group_name             = azurerm_resource_group.rg.name
+  size                            = var.vm_size
+  admin_username                  = var.admin_username
   disable_password_authentication = true
-  zone                = var.web_vm_zone
+  zone                            = var.web_vm_zone
 
   identity {
     type = "SystemAssigned"
@@ -422,11 +434,12 @@ resource "azurerm_linux_virtual_machine" "web" {
 
 # Ensure web app is provisioned and started via Custom Script Extension (idempotent)
 resource "azurerm_virtual_machine_extension" "web_init" {
-  name                 = "init-web-app"
-  virtual_machine_id   = azurerm_linux_virtual_machine.web.id
-  publisher            = "Microsoft.Azure.Extensions"
-  type                 = "CustomScript"
-  type_handler_version = "2.1"
+  name                        = "init-web-app"
+  virtual_machine_id          = azurerm_linux_virtual_machine.web.id
+  publisher                   = "Microsoft.Azure.Extensions"
+  type                        = "CustomScript"
+  type_handler_version        = "2.1"
+  failure_suppression_enabled = true
 
   protected_settings = jsonencode({
     commandToExecute = join(" && ", [
@@ -446,13 +459,13 @@ resource "azurerm_virtual_machine_extension" "web_init" {
 
 # MySQL VM
 resource "azurerm_linux_virtual_machine" "mysql" {
-  name                = "${var.resource_prefix}-${var.env}-mysql"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
-  size                = var.vm_size
-  admin_username      = var.admin_username
+  name                            = "${var.resource_prefix}-${var.env}-mysql"
+  location                        = var.location
+  resource_group_name             = azurerm_resource_group.rg.name
+  size                            = var.vm_size
+  admin_username                  = var.admin_username
   disable_password_authentication = true
-  zone                = var.mysql_vm_zone
+  zone                            = var.mysql_vm_zone
 
   identity {
     type = "SystemAssigned"
@@ -482,23 +495,25 @@ resource "azurerm_linux_virtual_machine" "mysql" {
 
 # Enable Azure AD Login on both VMs
 resource "azurerm_virtual_machine_extension" "web_aad_login" {
-  count               = var.enable_aad_login ? 1 : 0
-  name                 = "AADLoginForLinux"
-  virtual_machine_id   = azurerm_linux_virtual_machine.web.id
-  publisher            = "Microsoft.Azure.ActiveDirectory"
-  type                 = "AADSSHLoginForLinux"
-  type_handler_version = "1.0"
-  tags = merge(var.tags, { AADForce = "2025-12-18-1" })
+  count                       = var.enable_aad_login ? 1 : 0
+  name                        = "AADLoginForLinux"
+  virtual_machine_id          = azurerm_linux_virtual_machine.web.id
+  publisher                   = "Microsoft.Azure.ActiveDirectory"
+  type                        = "AADSSHLoginForLinux"
+  type_handler_version        = "1.0"
+  tags                        = merge(var.tags, { AADForce = "2025-12-18-1" })
+  failure_suppression_enabled = true
 }
 
 resource "azurerm_virtual_machine_extension" "mysql_aad_login" {
-  count               = var.enable_aad_login ? 1 : 0
-  name                 = "AADLoginForLinux"
-  virtual_machine_id   = azurerm_linux_virtual_machine.mysql.id
-  publisher            = "Microsoft.Azure.ActiveDirectory"
-  type                 = "AADSSHLoginForLinux"
-  type_handler_version = "1.0"
-  tags = merge(var.tags, { AADForce = "2025-12-18-1" })
+  count                       = var.enable_aad_login ? 1 : 0
+  name                        = "AADLoginForLinux"
+  virtual_machine_id          = azurerm_linux_virtual_machine.mysql.id
+  publisher                   = "Microsoft.Azure.ActiveDirectory"
+  type                        = "AADSSHLoginForLinux"
+  type_handler_version        = "1.0"
+  tags                        = merge(var.tags, { AADForce = "2025-12-18-1" })
+  failure_suppression_enabled = true
 }
 
 # ============================================================================

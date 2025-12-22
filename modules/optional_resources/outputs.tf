@@ -6,7 +6,7 @@ output "resource_group_name" {
 output "resource_group_id" {
   description = "ID of the optional resources resource group"
   value       = azurerm_resource_group.optional_resources.id
-}# outputs.tf in optional_resources module
+} # outputs.tf in optional_resources module
 
 output "management_resource_group_name" {
   value       = azurerm_resource_group.optional_resources.name

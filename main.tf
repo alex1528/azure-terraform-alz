@@ -126,8 +126,8 @@ module "core_policies" {
   log_analytics_workspace_id = var.deploy_log_analytics_workspace ? (
     var.observability_environment == "prod" ? module.optional_resources.log_analytics_workspace_prod_id : module.optional_resources.log_analytics_workspace_nonprod_id
   ) : var.log_analytics_workspace_id
-  dine_category_group         = "audit"
-  policy_assignment_location  = var.location
+  dine_category_group        = "audit"
+  policy_assignment_location = var.location
 
   depends_on = [module.management_groups]
 }
@@ -173,22 +173,22 @@ module "optional_resources" {
 # ============================================================================
 
 resource "azurerm_key_vault" "platform_kv" {
-  name                        = lower(replace("${var.resource_prefix}platformkv", "-", ""))
-  location                    = var.location
-  resource_group_name         = module.optional_resources.resource_group_name
-  tenant_id                   = data.azurerm_client_config.current.tenant_id
-  sku_name                    = "standard"
-  purge_protection_enabled    = true
-  soft_delete_retention_days  = 7
-  enabled_for_disk_encryption = true
-  enabled_for_deployment      = true
+  name                            = lower(replace("${var.resource_prefix}platformkv", "-", ""))
+  location                        = var.location
+  resource_group_name             = module.optional_resources.resource_group_name
+  tenant_id                       = data.azurerm_client_config.current.tenant_id
+  sku_name                        = "standard"
+  purge_protection_enabled        = true
+  soft_delete_retention_days      = 7
+  enabled_for_disk_encryption     = true
+  enabled_for_deployment          = true
   enabled_for_template_deployment = true
 
   access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-    key_permissions    = ["Get", "List", "Create", "Update"]
-    secret_permissions = ["Get", "List", "Set"]
+    tenant_id               = data.azurerm_client_config.current.tenant_id
+    object_id               = data.azurerm_client_config.current.object_id
+    key_permissions         = ["Get", "List", "Create", "Update"]
+    secret_permissions      = ["Get", "List", "Set"]
     certificate_permissions = ["Get", "List", "Create", "Update"]
   }
   tags = local.common_tags
@@ -274,8 +274,8 @@ module "compute" {
   existing_subnet_id  = var.existing_subnet_id
 
   # Azure Monitor configuration
-  enable_azure_monitor       = var.enable_azure_monitor
-  subscription_id            = data.azurerm_client_config.current.subscription_id
+  enable_azure_monitor = var.enable_azure_monitor
+  subscription_id      = data.azurerm_client_config.current.subscription_id
   log_analytics_workspace_id = var.deploy_log_analytics_workspace ? (
     var.observability_environment == "prod" ? module.optional_resources.log_analytics_workspace_prod_id : module.optional_resources.log_analytics_workspace_nonprod_id
   ) : var.log_analytics_workspace_id
@@ -305,18 +305,25 @@ module "workload_web_mysql_prod" {
   generate_ssh_key    = var.generate_ssh_key
 
   # Networking
-  create_vnet        = true
-  existing_subnet_id = ""
-  assign_public_ip   = true
-  bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
+  create_vnet          = true
+  existing_subnet_id   = ""
+  assign_public_ip     = true
+  bastion_source_cidr  = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
   spoke_route_table_id = try(module.connectivity[0].spoke_route_table_id, "")
+
+  # Distinct address space to avoid peering overlap with nonprod
+  # 收敛到最终地址空间：仅 10.12/16
+  vnet_address_space = ["10.12.0.0/16"]
+  # 保留迁移中的 v2 子网作为活动子网，避免 NIC 立即切换导致删除冲突
+  subnet_prefixes = ["10.12.2.0/24", "10.12.1.0/24"]
 
   # Enable AAD login extensions on VMs
   enable_aad_login = true
 
   # Availability Zones for DR posture
-  web_vm_zone   = "1"
-  mysql_vm_zone = "2"
+  # Avoid zone-specific placement to reduce SKU/zone capacity conflicts
+  web_vm_zone   = null
+  mysql_vm_zone = null
 
   # Database
   db_username = var.db_username
@@ -344,18 +351,23 @@ module "workload_web_mysql_nonprod" {
   generate_ssh_key    = var.generate_ssh_key
 
   # Networking
-  create_vnet        = true
-  existing_subnet_id = ""
-  assign_public_ip   = true
-  bastion_source_cidr = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
+  create_vnet          = true
+  existing_subnet_id   = ""
+  assign_public_ip     = true
+  bastion_source_cidr  = try(module.connectivity[0].hub_subnet_cidrs["AzureBastionSubnet"], "")
   spoke_route_table_id = try(module.connectivity[0].spoke_route_table_id, "")
+
+  # Keep existing nonprod address space
+  vnet_address_space = ["10.11.0.0/16"]
+  subnet_prefixes    = ["10.11.1.0/24"]
 
   # Enable AAD login extensions on VMs
   enable_aad_login = true
 
   # Availability Zones for DR posture
-  web_vm_zone   = "2"
-  mysql_vm_zone = "3"
+  # Use no specific zone to avoid regional SKU capacity conflicts
+  web_vm_zone   = null
+  mysql_vm_zone = null
 
   # Database
   db_username = var.db_username
@@ -369,17 +381,108 @@ module "workload_web_mysql_nonprod" {
 # IAM: STANDARD USER + RBAC (PROD & NONPROD)
 # ============================================================================
 
+# --------------------------------------------------------------------------
+# HUB-SPOKE VNET PEERING (REQUIRED FOR FORCED TUNNELING VIA FIREWALL)
+# --------------------------------------------------------------------------
+
+// Hub↔Prod peering 暂时移除，待地址空间收敛后再创建
+
+resource "azurerm_virtual_network_peering" "hub_to_prod" {
+  name                      = "hub-to-prod"
+  resource_group_name       = module.connectivity[0].connectivity_resource_group_name
+  virtual_network_name      = module.connectivity[0].hub_vnet_name
+  remote_virtual_network_id = module.workload_web_mysql_prod.vnet_id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+
+  depends_on = [module.connectivity, module.workload_web_mysql_prod]
+}
+
+resource "azurerm_virtual_network_peering" "prod_to_hub" {
+  name                      = "prod-to-hub"
+  resource_group_name       = module.workload_web_mysql_prod.resource_group_name
+  virtual_network_name      = module.workload_web_mysql_prod.vnet_name
+  remote_virtual_network_id = module.connectivity[0].hub_vnet_id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+
+  depends_on = [module.connectivity, module.workload_web_mysql_prod]
+}
+
+resource "azurerm_virtual_network_peering" "hub_to_nonprod" {
+  name                      = "hub-to-nonprod"
+  resource_group_name       = module.connectivity[0].connectivity_resource_group_name
+  virtual_network_name      = module.connectivity[0].hub_vnet_name
+  remote_virtual_network_id = module.workload_web_mysql_nonprod.vnet_id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+
+  depends_on = [module.connectivity, module.workload_web_mysql_nonprod]
+}
+
+resource "azurerm_virtual_network_peering" "nonprod_to_hub" {
+  name                      = "nonprod-to-hub"
+  resource_group_name       = module.workload_web_mysql_nonprod.resource_group_name
+  virtual_network_name      = module.workload_web_mysql_nonprod.vnet_name
+  remote_virtual_network_id = module.connectivity[0].hub_vnet_id
+
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+
+  depends_on = [module.connectivity, module.workload_web_mysql_nonprod]
+}
+
 locals {
-  # Use the first available domain object's domain_name attribute
-  default_domain = try(data.azuread_domains.current.domains[0].domain_name, null)
+  # Resolve a valid tenant domain for UPNs with robust priority:
+  # 0) If override provided, use it directly
+  # 1) Prefer the tenant's default AND verified domain
+  # 2) Prefer any verified, non-initial domain (custom domain)
+  # 3) Fallback to the initial onmicrosoft.com domain
+  # 4) As a last resort, take the first entry
+  tenant_domains = try(data.azuread_domains.current.domains, [])
+
+  # Override domain if explicitly set
+  upn_domain_override = var.upn_domain_override
+
+  # Candidates by priority
+  default_verified_candidates = [for d in local.tenant_domains : d.domain_name if try(d.is_default, false) && try(d.is_verified, false)]
+  verified_non_initial        = [for d in local.tenant_domains : d.domain_name if try(d.is_verified, false) && !try(d.is_initial, false)]
+  # Prefer a verified custom domain that matches org_name hint
+  org_name_lc                 = lower(var.org_name)
+  verified_match_org          = [for d in local.tenant_domains : d.domain_name if try(d.is_verified, false) && !try(d.is_initial, false) && contains(lower(d.domain_name), local.org_name_lc)]
+  initial_domain_candidates   = [for d in local.tenant_domains : d.domain_name if try(d.is_initial, false)]
+
+  # Prefer a verified custom domain that exactly matches the Owner tag's email domain, if provided
+  owner_tag_value             = try(var.tags["Owner"], "")
+  owner_tag_domain            = lower(join("@", slice(split("@", local.owner_tag_value), 1, length(split("@", local.owner_tag_value)))))
+  verified_match_owner_domain = [for d in local.tenant_domains : d.domain_name if try(d.is_verified, false) && !try(d.is_initial, false) && lower(d.domain_name) == local.owner_tag_domain]
+
+  default_verified_domain_name = try(local.default_verified_candidates[0], null)
+  verified_match_org_name      = try(local.verified_match_org[0], null)
+  verified_domain_name         = try(local.verified_non_initial[0], null)
+  initial_domain_name          = try(local.initial_domain_candidates[0], null)
+
+  resolved_default_domain = coalesce(
+    local.default_verified_domain_name,
+    try(local.verified_match_owner_domain[0], null),
+    local.verified_match_org_name,
+    local.verified_domain_name,
+    local.initial_domain_name,
+    try(local.tenant_domains[0].domain_name, null)
+  )
+
+  default_domain = coalesce(local.upn_domain_override, local.resolved_default_domain)
 }
 
 module "iam_standard_user" {
   source = "./modules/iam_user_rbac"
 
-  user_principal_name  = "${var.iam_user_alias}@${local.default_domain}"
-  display_name         = var.iam_user_display_name
-  initial_password     = random_password.iam_user_initial.result
+  user_principal_name   = "${var.iam_user_alias}@${local.default_domain}"
+  display_name          = var.iam_user_display_name
+  initial_password      = random_password.iam_user_initial.result
   force_password_change = true
 
   role_assignments = [
@@ -473,36 +576,40 @@ module "iam_group_users" {
 # ============================================================================
 
 resource "azurerm_consumption_budget_resource_group" "prod_budget" {
-  name                = "${var.resource_prefix}-prod-rg-budget"
-  resource_group_id   = module.workload_web_mysql_prod.resource_group_id
-  amount              = var.budget_amount_prod
-  time_grain          = "Monthly"
+  count             = var.enable_budgets ? 1 : 0
+  name              = "${var.resource_prefix}-prod-rg-budget"
+  resource_group_id = module.workload_web_mysql_prod.resource_group_id
+  amount            = var.budget_amount_prod
+  time_grain        = "Monthly"
   time_period {
-    start_date = timestamp()
+    # Budget must start on the 1st day of the month in RFC3339
+    start_date = "${formatdate("YYYY-MM", timestamp())}-01T00:00:00Z"
   }
 
   notification {
-    enabled         = true
-    threshold       = 80
-    operator        = "GreaterThan"
-    contact_emails  = var.budget_alert_emails
+    enabled        = true
+    threshold      = 80
+    operator       = "GreaterThan"
+    contact_emails = var.budget_alert_emails
   }
 }
 
 resource "azurerm_consumption_budget_resource_group" "nonprod_budget" {
-  name                = "${var.resource_prefix}-nonprod-rg-budget"
-  resource_group_id   = module.workload_web_mysql_nonprod.resource_group_id
-  amount              = var.budget_amount_nonprod
-  time_grain          = "Monthly"
+  count             = var.enable_budgets ? 1 : 0
+  name              = "${var.resource_prefix}-nonprod-rg-budget"
+  resource_group_id = module.workload_web_mysql_nonprod.resource_group_id
+  amount            = var.budget_amount_nonprod
+  time_grain        = "Monthly"
   time_period {
-    start_date = timestamp()
+    # Budget must start on the 1st day of the month in RFC3339
+    start_date = "${formatdate("YYYY-MM", timestamp())}-01T00:00:00Z"
   }
 
   notification {
-    enabled         = true
-    threshold       = 80
-    operator        = "GreaterThan"
-    contact_emails  = var.budget_alert_emails
+    enabled        = true
+    threshold      = 80
+    operator       = "GreaterThan"
+    contact_emails = var.budget_alert_emails
   }
 }
 

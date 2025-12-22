@@ -296,7 +296,7 @@ variable "deploy_compute_resources" {
 variable "vm_size" {
   description = "Virtual machine size (4 vCPU, 8GB RAM options: Standard_B2s, Standard_D2s_v3)"
   type        = string
-  default     = "Standard_D2s_v3"
+  default     = "Standard_D2s_v5"
 }
 
 variable "vm_os_type" {
@@ -458,10 +458,21 @@ variable "iam_user_display_name" {
   type        = string
   default     = "ALZ Standard User"
 }
+variable "upn_domain_override" {
+  description = "Optional override for the UPN domain (e.g., company.com). If set, all created users will use <alias>@<upn_domain_override>."
+  type        = string
+  default     = null
+}
 
 # ============================================================================
 # COST MANAGEMENT (BUDGETS)
 # ============================================================================
+
+variable "enable_budgets" {
+  description = "Whether to create Cost Management budgets (disable if subscription offer type unsupported)"
+  type        = bool
+  default     = false
+}
 
 variable "budget_amount_prod" {
   description = "Monthly budget amount for Production workload resource group"
