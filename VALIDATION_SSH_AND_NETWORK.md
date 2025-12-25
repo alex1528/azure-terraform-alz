@@ -18,7 +18,7 @@
   - 非生产 MySQL：`bingohr-nonprod-mysql`
   - 生产 Web：`bingohr-prod-web`
   - 生产 MySQL：`bingohr-prod-mysql`
-- AAD UPN：`stduser@gdjiuyun.onmicrosoft.com`
+ - AAD UPN：`stduser@example.com`
 
 ## 一、AAD SSH 登录（可选交互验证）
 - 门户 Bastion 方式（推荐）：

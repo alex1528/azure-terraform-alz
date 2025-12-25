@@ -324,7 +324,7 @@ pwsh scripts/setup-maintenance-schedule.ps1 -CreateWeekly -WeeklyDay Sunday -Wee
 
 为确保新增用户的首次登录必须修改初始密码，并避免使用未验证的自定义域导致的“用户名可能不正确”提示，本实现提供以下步骤与脚本：
 
-- 核心结论：当前租户未验证自定义域，`resolved_upn_domain` 为 `gdjiuyun.onmicrosoft.com`；所有新增用户均已设置 `forceChangePasswordNextSignIn = true`。
+- 核心结论：当前租户未验证自定义域，`resolved_upn_domain` 为 `example.com`；所有新增用户均已设置 `forceChangePasswordNextSignIn = true`。
 
 ### 一键检查（Graph API）
 
@@ -338,8 +338,8 @@ pwsh -NoProfile scripts/check-force-password-change.ps1
 
 ```
 UPN                                          ForceChangeOnNextSignIn
-stduser@gdjiuyun.onmicrosoft.com            True
-bingohr-<group>-user@gdjiuyun.onmicrosoft.com True
+stduser@example.com            True
+bingohr-<group>-user@example.com True
 ...
 ```
 
@@ -364,8 +364,8 @@ terraform apply tfplan_upn_override
 
 在自定义域验证前，使用下述 UPN 登录 Azure Portal：
 
-- 标准用户：`stduser@gdjiuyun.onmicrosoft.com`
-- 组用户：`bingohr-<group>-user@gdjiuyun.onmicrosoft.com`
+- 标准用户：`stduser@example.com`
+- 组用户：`bingohr-<group>-user@example.com`
 
 首次登录将被强制修改初始密码；如需复核，请运行上述检查脚本。
 
@@ -401,7 +401,7 @@ terraform apply tfplan_upn_override
 使用示例变量（请替换为实际 UPN、资源组与 VM 名称）：
 
 ```powershell
-$upn   = "bingohr-nonprod-user@gdjiuyun.onmicrosoft.com"   # 任一组用户 UPN
+$upn   = "bingohr-nonprod-user@example.com"   # 任一组用户 UPN
 $rg    = "<your-nonprod-workload-rg>"                       # 例如：bingohr-nonprod-rg
 $vm    = "<your-nonprod-vm-name>"                           # 例如：bingohr-nonprod-web
 

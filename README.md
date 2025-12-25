@@ -278,7 +278,7 @@ az network bastion rdp \
 
 This implementation includes guidance and tooling to ensure new users are prompted to change their initial password on first login and to avoid unverified custom domain issues.
 
-- Current state: `resolved_upn_domain` is `gdjiuyun.onmicrosoft.com` (no verified custom domain yet); all newly created users have `forceChangePasswordNextSignIn = true`.
+- Current state: `resolved_upn_domain` is `example.com` (no verified custom domain yet); all newly created users have `forceChangePasswordNextSignIn = true`.
 
 ### Check via Graph API (one command)
 
@@ -292,8 +292,8 @@ Expected output (sample):
 
 ```
 UPN                                  ForceChangeOnNextSignIn
-stduser@gdjiuyun.onmicrosoft.com     True
-bingohr-<group>-user@gdjiuyun.onmicrosoft.com  True
+stduser@example.com     True
+bingohr-<group>-user@example.com  True
 ...
 ```
 
@@ -318,8 +318,8 @@ Note: Overriding to an unverified domain results in Azure AD 400 errors and is r
 
 Before domain verification, use the following UPNs to sign in to Azure Portal:
 
-- Standard user: `stduser@gdjiuyun.onmicrosoft.com`
-- Group users: `bingohr-<group>-user@gdjiuyun.onmicrosoft.com`
+- Standard user: `stduser@example.com`
+- Group users: `bingohr-<group>-user@example.com`
 
 First login will force password change; re-run the check script to confirm.
 
@@ -354,7 +354,7 @@ Where it’s defined: see [main.tf](main.tf) `local.alz_group_extra_rbac` and th
 Replace with actual UPN, resource group, and VM names:
 
 ```powershell
-$upn  = "bingohr-nonprod-user@gdjiuyun.onmicrosoft.com"
+$upn  = "bingohr-nonprod-user@example.com"
 $rg   = "<your-nonprod-workload-rg>"         # e.g., bingohr-nonprod-rg
 $vm   = "<your-nonprod-vm-name>"             # e.g., bingohr-nonprod-web
 

@@ -299,7 +299,7 @@ terraform apply tfplan_upn_override
 
 ### 使用 Azure CLI 验证
 ```powershell
-$upn  = "bingohr-nonprod-user@gdjiuyun.onmicrosoft.com"  # 替换为实际组用户 UPN
+$upn  = "bingohr-nonprod-user@example.com"  # 替换为实际组用户 UPN
 $rg   = "<your-nonprod-workload-rg>"                    # 例如：bingohr-nonprod-rg
 $vm   = "<your-nonprod-vm-name>"                        # 例如：bingohr-nonprod-web
 

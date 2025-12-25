@@ -23,7 +23,7 @@ For each VM (prod/nonprod web + mysql):
 1. Azure Portal → Virtual machines → select VM
 2. Click `Connect` → choose `Bastion`
 3. Authentication type: select `Azure AD`
-4. Username: `stduser@gdjiuyun.onmicrosoft.com`
+4. Username: `stduser@example.com`
 5. Click `Connect` to initiate session
 6. Confirm successful login prompt on the Bastion session
 
